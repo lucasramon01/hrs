@@ -1,0 +1,291 @@
+{
+  "paragraphs": [
+    {
+      "text": "# Importação das bibliotecas\n\nfrom nltk.corpus import stopwords\nfrom gensim.models.word2vec import Word2Vec\nfrom gensim.models.keyedvectors import KeyedVectors\nfrom scipy import spatial\nimport gensim.downloader as api\nimport pandas as pd\nimport re\nimport csv",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 6:47:30 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537651510407_-1595786774",
+      "id": "20180922-182510_1445835619",
+      "dateCreated": "Sep 22, 2018 6:25:10 PM",
+      "dateStarted": "Sep 22, 2018 6:47:30 PM",
+      "dateFinished": "Sep 22, 2018 6:47:47 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Carregando o modelo\n\nmodel \u003d KeyedVectors.load_word2vec_format(\u0027GoogleNews-vectors-negative300.bin\u0027, binary\u003dTrue)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:39:24 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537651530852_-2115182465",
+      "id": "20180922-182530_1450668742",
+      "dateCreated": "Sep 22, 2018 6:25:30 PM",
+      "dateStarted": "Sep 22, 2018 6:48:48 PM",
+      "dateFinished": "Sep 22, 2018 7:07:05 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Vetores de palavras e expressões regulares a serem retiradas do texto\n\nstop_words \u003d set(stopwords.words(\u0027english\u0027))\n\nmore_common \u003d [\u0027with\u0027, \u0027history\u0027, \u0027patient\u0027, \u0027pain\u0027, \u0027present\u0027, \u0027hospital\u0027, \u0027illness\u0027, \u0027that\u0027, \u0027from\u0027, \u0027this\u0027, \u0027denies\u0027, \u0027chest\u0027, \u0027last\u0027, \u0027which\u0027, \u0027were\u0027, \u0027given\u0027, \u0027name\u0027, \u0027year\u0027, \u0027have\u0027, \u0027been\u0027, \u0027also\u0027, \u0027showed\u0027, \u0027transferred\u0027, \u0027found\u0027, \u0027after\u0027, \u0027prior\u0027, \u0027started\u0027, \u0027days\u0027, \u0027known\u0027, \u0027left\u0027, \u0027admitted\u0027, \u0027then\u0027, \u0027recent\u0027, \u0027noted\u0027, \u0027presented\u0027, \u0027right\u0027, \u0027abdominal\u0027, \u0027time\u0027, \u0027admission\u0027, \u0027reports\u0027, \u0027over\u0027, \u0027well\u0027, \u0027received\u0027, \u0027cough\u0027, \u0027negative\u0027, \u0027past\u0027, \u0027presents\u0027, \u0027lastname\u0027, \u0027further\u0027, \u0027home\u0027, \u0027chills\u0027, \u0027placed\u0027, \u0027male\u0027, \u0027when\u0027, \u0027shortness\u0027, \u0027since\u0027, \u0027disease\u0027, \u0027symptoms\u0027, \u0027diarrhea\u0027, \u0027today\u0027, \u0027recently\u0027, \u0027female\u0027, \u0027initial\u0027, \u0027dyspnea\u0027, \u0027baseline\u0027, \u0027revealed\u0027, \u0027transfer\u0027, \u0027arrival\u0027, \u0027fevers\u0027, \u0027severe\u0027, \u0027felt\u0027, \u0027developed\u0027, \u0027increased\u0027, \u0027back\u0027, \u0027evaluation\u0027, \u0027acute\u0027, \u0027some\u0027, \u0027night\u0027, \u0027during\u0027, \u0027there\u0027, \u0027micu\u0027, \u0027initially\u0027, \u0027without\u0027, \u0027states\u0027, \u0027only\u0027, \u0027treated\u0027, \u0027changes\u0027, \u0027worsening\u0027, \u0027significant\u0027, \u0027note\u0027]\n\nmore_common_diagnosis \u003d[\u0027of\u0027, \u0027other\u0027, \u0027and\u0027, \u0027or\u0027, \u0027diagnostic\u0027]\n\nregular_expressions \u003d [\u0027[0-9]+\u0027, \u0027\"\u0027, \u0027\\\u0027\u0027, \u0027\\.\u0027, \u0027,\u0027, \u0027/\u0027, \u0027-\u0027, \u0027:\u0027, \u0027\\(\u0027, \u0027\\)\u0027,  \u0027%\u0027, \u0027#\u0027, \u0027\\*\u0027, \u0027\\n\u0027, \u0027\\[\u0027, \u0027\\]\u0027, \u0027 +\u0027]",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:48:25 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537651552125_-357603517",
+      "id": "20180922-182552_662186387",
+      "dateCreated": "Sep 22, 2018 6:25:52 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Pré-processamento do texto\n\ndef filter_words(text):\n\n    for exp in regular_expressions:\n        text \u003d re.sub(exp, \u0027 \u0027, text)\n\n    words_array \u003d text.split(\u0027 \u0027)\n    final_array \u003d []\n    \n    for word in words_array:\n        \n        if len(word) \u003e 3 and word not in more_common and word not in stop_words:\n            final_array.append(word)\n\n    return final_array",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:44:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656072017_1112985568",
+      "id": "20180922-194112_1004445149",
+      "dateCreated": "Sep 22, 2018 7:41:12 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Cria um vetor para a lista de palavras\n\ndef wordsToVector(array):\n    sem_embbeding \u003d com_embbeding \u003d 0\n    list \u003d []\n    t \u003d []\n    for word in array:\n        if len(word) \u003e 3:\n            try:\n                x \u003d model[word]\n                list.append(word)\n                com_embbeding \u003d com_embbeding + 1\n            except:\n                print(word, array)\n                sem_embbeding \u003d sem_embbeding + 1\n\n    if(len(list) \u003e 0):\n        m\u003dmodel[list[0]]\n        t \u003d m - m\n        for m in list:\n            t \u003d t + model[m]\n        t \u003d t /len(list)\n        \n    encontrados \u003d 100 * com_embbeding / (com_embbeding + sem_embbeding)\n    print(\u0027Encontrados\u0027, encontrados, \u0027%\u0027)\n    if encontrados \u003e 70:\n        return t\n    else\n        return []",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 8:04:28 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656293730_-1021310170",
+      "id": "20180922-194453_1162055701",
+      "dateCreated": "Sep 22, 2018 7:44:53 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário de doenças com seus respectivos vetores.\n\nwith open(\u0027diagnoses2.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    dictionary \u003d {}\n    diagnoses \u003d []\n    for row in readCSV:\n        text \u003d row[2].lower()\n        \n        for exp in expressions:\n            text \u003d re.sub(exp, \u0027 \u0027, text)\n            \n        words_array \u003d text.split()\n        vector \u003d wordsToVector(words_array)\n        if len(vector) \u003e 0:\n            dictionary.update({row[0]: vector})\n            diagnoses.append(row[0])",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 8:05:27 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656398722_-1054429224",
+      "id": "20180922-194638_400189704",
+      "dateCreated": "Sep 22, 2018 7:46:38 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Retorna uma lista de doenças com vetores mais próximos\r\n\r\ndef list_most_similar(vector):\r\n    \r\n    list \u003d []\r\n    d \u003d dictionary \r\n\r\n    for k,v in d.items():\r\n        try:\r\n            result \u003d 1 - spatial.distance.cosine(vector, v)\r\n            tupla \u003d (k, result)\r\n            list.append(tupla)\r\n        except:\r\n            erro \u003d 1\r\n    \r\n    list \u003d sorted(list, key\u003dlambda x: x[1], reverse\u003dTrue)\r\n\r\n    most_similar \u003d []\r\n    for i in range (0,4):\r\n        most_similar.append(list[i][0])\r\n\r\n    \r\n    return most_similar",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:50:34 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656570259_-1506480178",
+      "id": "20180922-194930_143976812",
+      "dateCreated": "Sep 22, 2018 7:49:30 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Realiza a leitura do texto e recomenda uma lista de doenças.\r\n\r\ndef recommender_list(text):\r\n    diasease \u003d (\u0027\u0027, [])\r\n\r\n    try:\r\n        patient_status \u003d text.group(0).lower()\r\n        status_list \u003d filter_words(patient_status)\r\n        #print(status_list)\r\n\r\n        list \u003d []\r\n        for word in status_list:\r\n            try:\r\n    \t        x \u003d model[word]\r\n    \t        list.append(word)\r\n            except:\r\n    \t        erro \u003d 1\r\n    \t        \r\n        if(len(list) \u003e 0):\r\n            m\u003dmodel[list[0]]\r\n            t \u003d m - m\r\n            for m in list:\r\n                t \u003d t + model[m]\r\n            t \u003d t /len(list)\r\n            diasease \u003d list_most_similar(t)\r\n            #print(diasease)\r\n\r\n    except:\r\n        errro \u003d 1\r\n\r\n    return diasease",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:51:05 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656653899_831192843",
+      "id": "20180922-195053_1380176076",
+      "dateCreated": "Sep 22, 2018 7:50:53 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Teste da técnica de Word Embeddings\r\n\r\nwith open(\u0027admissions_notes.csv\u0027) as csvfile:\r\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\r\n    \r\n    present \u003d [\u0027History of Present Illness:\\n(.+\\n)+\u0027]\r\n    past \u003d [\u0027Past Medical History:\\n(.+\\n\\n?)+\u0027]\r\n    i \u003d certo1 \u003d errado1 \u003d certo2 \u003d errado2 \u003d 0\r\n\r\n    for row in readCSV:\r\n        if row[2] in diseases:\r\n            vector \u003d dic_admissions.get(row[1])\r\n\r\n            if vector is not None:\r\n                \r\n                only_present \u003d re.search(present[0], row[3])\r\n                only_past \u003d re.search(past[0], row[3])\r\n                \r\n                diseases1 \u003d recommender_list(only_present)\r\n                diseases2 \u003d recommender_list(only_past)\r\n\r\n                for d in diseases1:\r\n                    if (d in vector):\r\n                        certo1 \u003d certo1 + 1\r\n                    else:\r\n                        errado1 \u003d errado1 + 1\r\n                \r\n                for d in diseases2:\r\n                    if (d in vector):\r\n                        certo2 \u003d certo2 + 1\r\n                        acertou \u003d True\r\n                    else:\r\n                        errado2 \u003d errado2 + 1\r\n\r\n                i \u003d i + 1\r\n                if i \u003e 1000:\r\n                    break # condição de parada\r\n                \r\nprint(certo1, certo2, errado1, errado2)\r\n\r\nresultado_presente \u003d round(100 * certo1 / (certo1 + errado1), 2)\r\nresultado_passado \u003d round(100 * certo2 / (certo2 + errado2), 2)\r\n\r\nprint(\u0027Porcentagem de acerto geral filtrando o presente:\u0027, resultado_presente, \u0027%\u0027)\r\nprint(\u0027Porcentagem de acerto geral filtrando o passado:\u0027, resultado_passado, \u0027%\u0027)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 7:57:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537656667059_-772440573",
+      "id": "20180922-195107_2114234739",
+      "dateCreated": "Sep 22, 2018 7:51:07 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "",
+      "user": "anonymous",
+      "dateUpdated": "Sep 22, 2018 8:20:15 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537657558114_905307053",
+      "id": "20180922-200558_1910069534",
+      "dateCreated": "Sep 22, 2018 8:05:58 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "02. Word2Vec",
+  "id": "2DR7PECN6",
+  "angularObjects": {
+    "2DFFMJW2D:shared_process": [],
+    "2DE4C8UXA:shared_process": [],
+    "2DFNF7F86:shared_process": [],
+    "2DDMFQ4NT:shared_process": [],
+    "2DF4JHTJS:shared_process": [],
+    "2DGTDKVBY:shared_process": [],
+    "2DDX1FHE4:shared_process": [],
+    "2DGBVAR63:shared_process": [],
+    "2DE1HTE4B:shared_process": [],
+    "2DFUMJA2M:shared_process": [],
+    "2DF3EN9Y8:shared_process": [],
+    "2DFG8QFKG:shared_process": [],
+    "2DE19T4UN:shared_process": [],
+    "2DDZ2CZF6:shared_process": [],
+    "2DGYH4B9E:shared_process": [],
+    "2DEG6W7VR:shared_process": [],
+    "2DFPD3S3G:shared_process": [],
+    "2DHACHYJ3:shared_process": [],
+    "2DDRJAE6Z:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}
