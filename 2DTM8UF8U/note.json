@@ -1,0 +1,422 @@
+{
+  "paragraphs": [
+    {
+      "text": "import re\nimport csv\nimport pandas as pd\nimport numpy as np\nimport matplotlib\nimport matplotlib.pyplot as plt\nimport alpenglow\nimport alpenglow.experiments\nimport alpenglow.evaluation",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:55:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537225482381_1157574453",
+      "id": "20180917-200442_1314617562",
+      "dateCreated": "Sep 17, 2018 8:04:42 PM",
+      "dateStarted": "Sep 24, 2018 6:55:08 PM",
+      "dateFinished": "Sep 24, 2018 6:55:11 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário de doenças com seus respectivos vetores.\n\nwith open(\u0027diagnoses-508.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    doencas \u003d []\n    for row in readCSV:\n        doencas.append(row[0])",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:55:16 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537733988823_67320750",
+      "id": "20180923-171948_1369710218",
+      "dateCreated": "Sep 23, 2018 5:19:48 PM",
+      "dateStarted": "Sep 24, 2018 6:55:10 PM",
+      "dateFinished": "Sep 24, 2018 6:55:11 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "for i in range(0, len(doencas)):\n    doencas[i] \u003d re.sub(\u0027E\u0027, \u002732\u0027, doencas[i])\n    doencas[i] \u003d re.sub(\u0027V\u0027, \u002786\u0027, doencas[i])",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:55:13 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537725861616_2144702499",
+      "id": "20180923-150421_1325305395",
+      "dateCreated": "Sep 23, 2018 3:04:21 PM",
+      "dateStarted": "Sep 24, 2018 6:55:13 PM",
+      "dateFinished": "Sep 24, 2018 6:55:13 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import csv\nwith open(\u0027admissions_notes.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    \n    f_train \u003d open(\"train_data.csv\", \"w\")\n    f_test \u003d open(\"test_data.csv\", \"w\")\n    \n    present \u003d [\u0027History of Present Illness:\\n(.+\\n)+\u0027]\n    expressions \u003d [\u0027-\u0027, \u0027 \u0027, \u0027:\u0027, \u002700$\u0027]\n    regular_expressions \u003d [\u0027[0-9]+\u0027, \u0027\"\u0027, \u0027\\\u0027\u0027, \u0027\\.\u0027, \u0027;\u0027, \u0027,\u0027, \u0027/\u0027, \u0027-\u0027, \u0027:\u0027, \u0027\\(\u0027, \u0027\\)\u0027,  \u0027%\u0027, \u0027#\u0027, \u0027\\*\u0027, \u0027\\n\u0027, \u0027\\[\u0027, \u0027\\]\u0027, \u0027 +\u0027]\n    \n    i \u003d 0\n    for row in readCSV:\n        i \u003d i + 1\n        \n        only_present \u003d re.search(present[0], row[3])\n        if only_present is not None:\n            text \u003d only_present.group(0)\n            text \u003d re.sub(\u0027\\n\u0027, \u0027 \u0027, text)\n            text \u003d re.sub(\u0027;\u0027, \u0027 \u0027, text)\n            text \u003d re.sub(\u0027,\u0027, \u0027 \u0027, text)\n            for exp in regular_expressions:\n                text \u003d re.sub(exp, \u0027 \u0027, text)\n            \n            \n            data \u003d row[0]\n            for exp in expressions:\n                data \u003d re.sub(exp, \u0027\u0027, data)\n                \n            num \u003d row[2]\n            num \u003d re.sub(\u0027E\u0027, \u002732\u0027, num)\n            num \u003d re.sub(\u0027V\u0027, \u002786\u0027, num)\n\n            if num in doencas:\n                \n                if i \u003c 30000 :\n                    f_train.write(\u0027\u0027 + data + \u0027, \u0027 + row[1] + \u0027, \u0027 + num  + \u0027, \u0027 + text + \u0027\\n\u0027)\n                else:\n                    f_test.write(\u0027\u0027 + data + \u0027, \u0027 + row[1] + \u0027, \u0027 + num  +  \u0027, \u0027 + text +\u0027\\n\u0027)\n\nf_train.close() \nf_test.close()",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:55:35 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537225426010_-1898394115",
+      "id": "20180917-200346_621023537",
+      "dateCreated": "Sep 17, 2018 8:03:46 PM",
+      "dateStarted": "Sep 24, 2018 6:55:24 PM",
+      "dateFinished": "Sep 24, 2018 6:55:49 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import csv\nwith open(\u0027admissions_notes.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    \n    f_train \u003d open(\"train_batch.csv\", \"w\")\n    f_test \u003d open(\"test_batch.csv\", \"w\")\n    \n    present \u003d [\u0027History of Present Illness:\\n(.+\\n)+\u0027]\n    expressions \u003d [\u0027-\u0027, \u0027 \u0027, \u0027:\u0027, \u002700$\u0027]\n    regular_expressions \u003d [\u0027[0-9]+\u0027, \u0027\"\u0027, \u0027\\\u0027\u0027, \u0027\\.\u0027, \u0027;\u0027, \u0027,\u0027, \u0027/\u0027, \u0027-\u0027, \u0027:\u0027, \u0027\\(\u0027, \u0027\\)\u0027,  \u0027%\u0027, \u0027#\u0027, \u0027\\*\u0027, \u0027\\n\u0027, \u0027\\[\u0027, \u0027\\]\u0027, \u0027 +\u0027]\n    \n    i \u003d 0\n    for row in readCSV:\n        i \u003d i + 1\n        \n        only_present \u003d re.search(present[0], row[3])\n        if only_present is not None:\n\n            data \u003d row[0]\n            for exp in expressions:\n                data \u003d re.sub(exp, \u0027\u0027, data)\n                \n            num \u003d row[2]\n            num \u003d re.sub(\u0027E\u0027, \u002732\u0027, num)\n            num \u003d re.sub(\u0027V\u0027, \u002786\u0027, num)\n\n            if num in doencas:\n                \n                if i \u003c 30000 :\n                    f_train.write(\u0027\u0027 + data + \u0027, \u0027 + row[1] + \u0027, \u0027 + num  + \u0027\\n\u0027)\n                else:\n                    f_test.write(\u0027\u0027 + data + \u0027, \u0027 + row[1] + \u0027, \u0027 + num  +\u0027\\n\u0027)\n\nf_train.close() \nf_test.close()",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:09 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python",
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537224021649_1043769810",
+      "id": "20180917-194021_1012636139",
+      "dateCreated": "Sep 17, 2018 7:40:21 PM",
+      "dateStarted": "Sep 24, 2018 6:55:59 PM",
+      "dateFinished": "Sep 24, 2018 6:56:17 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Dados de treinamaento\n\ntrain_batch \u003d pd.read_csv(\n    \u0027train_batch.csv\u0027,\n    header\u003dNone,\n    names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027]\n)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537306034448_531602810",
+      "id": "20180918-182714_1358274471",
+      "dateCreated": "Sep 18, 2018 6:27:14 PM",
+      "dateStarted": "Sep 24, 2018 6:56:02 PM",
+      "dateFinished": "Sep 24, 2018 6:56:18 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Dados de teste\n\ntest_batch \u003d pd.read_csv(\n    \u0027test_batch.csv\u0027,\n    header\u003dNone,\n    names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027]\n)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:05 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537308880548_-1149856629",
+      "id": "20180918-191440_315939621",
+      "dateCreated": "Sep 18, 2018 7:14:40 PM",
+      "dateStarted": "Sep 24, 2018 6:56:18 PM",
+      "dateFinished": "Sep 24, 2018 6:56:18 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "users1 \u003d []\n\nlast \u003d len(test_batch)\nfor i in range(0, last):\n    user \u003d test_batch.iloc[i][\u0027user\u0027]\n    if user not in users1:\n        users1.append(user)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537392209587_-602129000",
+      "id": "20180919-182329_731711442",
+      "dateCreated": "Sep 19, 2018 6:23:29 PM",
+      "dateStarted": "Sep 24, 2018 6:56:18 PM",
+      "dateFinished": "Sep 24, 2018 6:56:20 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "users2 \u003d []\n\nlast \u003d len(train_batch)\nfor i in range(0, last):\n    user \u003d train_batch.iloc[i][\u0027user\u0027]\n    if user not in users2:\n        users2.append(user)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:11 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537392206668_-970333697",
+      "id": "20180919-182326_2114234739",
+      "dateCreated": "Sep 19, 2018 6:23:26 PM",
+      "dateStarted": "Sep 24, 2018 6:56:18 PM",
+      "dateFinished": "Sep 24, 2018 6:56:24 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "users \u003d []\n        \nfor u in users1:\n    if u in users2:\n        users.append(u)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:13 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537392333207_-1222592703",
+      "id": "20180919-182533_1871190637",
+      "dateCreated": "Sep 19, 2018 6:25:33 PM",
+      "dateStarted": "Sep 24, 2018 6:56:20 PM",
+      "dateFinished": "Sep 24, 2018 6:56:24 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "f_train \u003d open(\"train_test_users.txt\", \"w\")\n\nfor u in users:\n    f_train.write(str(u)  + \u0027\\n\u0027)\n\n\nf_train.close()",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:24 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1537308893607_649599176",
+      "id": "20180918-191453_11503022",
+      "dateCreated": "Sep 18, 2018 7:14:53 PM",
+      "dateStarted": "Sep 24, 2018 6:56:24 PM",
+      "dateFinished": "Sep 24, 2018 6:56:31 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "users",
+      "user": "anonymous",
+      "dateUpdated": "Sep 24, 2018 6:56:41 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[58163, 26601, 8312, 7613, 28013, 10854, 71297, 27665, 13536, 7078, 4784, 11141, 88594, 2197, 9233]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1537309186828_-164915890",
+      "id": "20180918-191946_1333665670",
+      "dateCreated": "Sep 18, 2018 7:19:46 PM",
+      "dateStarted": "Sep 24, 2018 6:56:41 PM",
+      "dateFinished": "Sep 24, 2018 6:56:41 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537734457556_-1696325525",
+      "id": "20180923-172737_1529937527",
+      "dateCreated": "Sep 23, 2018 5:27:37 PM",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Divide Arquivo",
+  "id": "2DTM8UF8U",
+  "angularObjects": {
+    "2DFFMJW2D:shared_process": [],
+    "2DE4C8UXA:shared_process": [],
+    "2DFNF7F86:shared_process": [],
+    "2DDMFQ4NT:shared_process": [],
+    "2DF4JHTJS:shared_process": [],
+    "2DGTDKVBY:shared_process": [],
+    "2DDX1FHE4:shared_process": [],
+    "2DGBVAR63:shared_process": [],
+    "2DE1HTE4B:shared_process": [],
+    "2DFUMJA2M:shared_process": [],
+    "2DF3EN9Y8:shared_process": [],
+    "2DFG8QFKG:shared_process": [],
+    "2DE19T4UN:shared_process": [],
+    "2DDZ2CZF6:shared_process": [],
+    "2DGYH4B9E:shared_process": [],
+    "2DEG6W7VR:shared_process": [],
+    "2DFPD3S3G:shared_process": [],
+    "2DHACHYJ3:shared_process": [],
+    "2DDRJAE6Z:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}
