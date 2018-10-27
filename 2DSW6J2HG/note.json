@@ -1,0 +1,624 @@
+{
+  "paragraphs": [
+    {
+      "text": "# Importação das bibliotecas\n\nfrom gensim.test.utils import common_texts\nfrom gensim.models.doc2vec import Doc2Vec, TaggedDocument\nfrom alpenglow.offline.evaluation import NdcgScore\nfrom scipy import spatial\nimport pandas as pd\nimport csv \nimport re",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:03 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539124645461_-1276691353",
+      "id": "20181009-193725_325865917",
+      "dateCreated": "Oct 9, 2018 7:37:25 PM",
+      "dateStarted": "Oct 16, 2018 8:55:04 AM",
+      "dateFinished": "Oct 16, 2018 8:55:12 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "d2v_model \u003d Doc2Vec.load(\u0027embeddings/apnews_dbow/doc2vec.bin\u0027)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:05 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539127154152_-405373838",
+      "id": "20181009-201914_976081042",
+      "dateCreated": "Oct 9, 2018 8:19:14 PM",
+      "dateStarted": "Oct 16, 2018 8:55:06 AM",
+      "dateFinished": "Oct 16, 2018 8:55:31 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Vetores de palavras e expressões regulares a serem retiradas do texto\n\n#stop_words \u003d set(stopwords.words(\u0027english\u0027))\n\nmore_common \u003d [\u0027with\u0027, \u0027history\u0027, \u0027patient\u0027, \u0027pain\u0027, \u0027present\u0027, \u0027hospital\u0027, \u0027illness\u0027, \u0027that\u0027, \u0027from\u0027, \u0027this\u0027, \u0027denies\u0027, \u0027chest\u0027, \u0027last\u0027, \u0027which\u0027, \u0027were\u0027, \u0027given\u0027, \u0027name\u0027, \u0027year\u0027, \u0027have\u0027, \u0027been\u0027, \u0027also\u0027, \u0027showed\u0027, \u0027transferred\u0027, \u0027found\u0027, \u0027after\u0027, \u0027prior\u0027, \u0027started\u0027, \u0027days\u0027, \u0027known\u0027, \u0027left\u0027, \u0027admitted\u0027, \u0027then\u0027, \u0027recent\u0027, \u0027noted\u0027, \u0027presented\u0027, \u0027right\u0027, \u0027abdominal\u0027, \u0027time\u0027, \u0027admission\u0027, \u0027reports\u0027, \u0027over\u0027, \u0027well\u0027, \u0027received\u0027, \u0027cough\u0027, \u0027negative\u0027, \u0027past\u0027, \u0027presents\u0027, \u0027lastname\u0027, \u0027further\u0027, \u0027home\u0027, \u0027chills\u0027, \u0027placed\u0027, \u0027male\u0027, \u0027when\u0027, \u0027shortness\u0027, \u0027since\u0027, \u0027disease\u0027, \u0027symptoms\u0027, \u0027diarrhea\u0027, \u0027today\u0027, \u0027recently\u0027, \u0027female\u0027, \u0027initial\u0027, \u0027dyspnea\u0027, \u0027baseline\u0027, \u0027revealed\u0027, \u0027transfer\u0027, \u0027arrival\u0027, \u0027severe\u0027, \u0027felt\u0027, \u0027developed\u0027, \u0027increased\u0027, \u0027back\u0027, \u0027evaluation\u0027, \u0027acute\u0027, \u0027some\u0027, \u0027night\u0027, \u0027during\u0027, \u0027there\u0027, \u0027micu\u0027, \u0027initially\u0027, \u0027without\u0027, \u0027states\u0027, \u0027only\u0027, \u0027treated\u0027, \u0027changes\u0027, \u0027worsening\u0027, \u0027significant\u0027, \u0027note\u0027, \u0027admission\u0027, \u0027birth\u0027, \u0027first\u0027,  \u0027name\u0027, \u0027last\u0027, \u0027completed\u0027, \u0027phone\u0027, \u0027date\u0027, \u0027years\u0027, \u0027old\u0027, \u0027others\u0027, \u0027other\u0027, \u0027day\u0027, \u0027days\u0027, \u0027month\u0027, \u0027months\u0027, \u0027night\u0027, \u0027change\u0027, \u0027upon\u0027, \u0027cath\u0027, \u0027addition\u0027, \u0027progressive\u0027, \u0027multiple\u0027, \u0027location\u0027, \u0027fixed\u0027, \u0027going\u0027, \u0027increasing\u0027, \u0027less\u0027, \u0027nothing\u0027, \u0027hours\u0027, \u0027normal\u0027, \u0027currently\u0027, \u0027exacerbated\u0027, \u0027location\u0027, \u0027fixed\u0027, \u0027going\u0027, \u0027increasing\u0027, \u0027jaundice\u0027, \u0027unknown\u0027, \u0027onset\u0027, \u0027shortly\u0027, \u0027diag\u0027, \u0027several\u0027, \u0027notable\u0027, \u0027failure\u0027, \u0027including\u0027, \u0027airway\u0027, \u0027possible\u0027, \u0027corrected\u0027, \u0027except\u0027, \u0027otherwise\u0027, \u0027except\u0027, \u0027like\u0027, \u0027lower\u0027, \u0027cadaveric\u0027, \u0027three\u0027, \u0027avoid\u0027, \u0027color\u0027, \u0027medical\u0027, \u0027else\u0027, \u0027bright\u0027, \u0027week\u0027, \u0027associated\u0027, \u0027occasional\u0027, \u0027diagnosis\u0027, \u0027similar\u0027, \u0027taken\u0027, \u0027complicated\u0027, \u0027rehab\u0027, \u0027work\u0027, \u0027surgery\u0027, \u0027repair\u0027, \u0027upper\u0027, \u0027notably\u0027, \u0027relatives\u0027, \u0027small\u0027]\n\nmore_common_diagnosis \u003d[\u0027of\u0027, \u0027other\u0027, \u0027and\u0027, \u0027or\u0027, \u0027diagnostic\u0027, \u0027total\u0027, \u0027without\u0027, \u0027with\u0027, \u0027closed\u0027,  \u0027on\u0027, \u0027unspecified\u0027, \u0027partial\u0027, \u0027reduction\u0027, \u0027site\u0027, \u0027specified\u0027, \u0027unknown\u0027, \u0027wall\u0027, \u0027growth\u0027, \u0027correction\u0027,\u0027insertion\u0027,\u0027closure\u0027, \u0027peripheral\u0027, \u0027not\u0027, \u0027radius\u0027, \u0027otherwise\u0027, \u0027except\u0027, \u0027part\u0027, \u0027repair\u0027] \n\nregular_expressions \u003d [\u0027[0-9]+\u0027, \u0027\"\u0027, \u0027\\\u0027\u0027, \u0027\\.\u0027, \u0027,\u0027, \u0027/\u0027, \u0027-\u0027, \u0027:\u0027, \u0027\\(\u0027, \u0027\\)\u0027,  \u0027%\u0027, \u0027#\u0027, \u0027\\*\u0027, \u0027\\n\u0027, \u0027\\[\u0027, \u0027\\]\u0027, \u0027 +\u0027]",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:12 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539442755143_1014566349",
+      "id": "20181013-115915_925896272",
+      "dateCreated": "Oct 13, 2018 11:59:15 AM",
+      "dateStarted": "Oct 16, 2018 8:55:13 AM",
+      "dateFinished": "Oct 16, 2018 8:55:31 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "#import gensim.models as g \nstart_alpha\u003d0.01\ninfer_epoch\u003d1000\nmodel\u003d\u0027embeddings/apnews_dbow/doc2vec.bin\u0027\n#m \u003d g.Doc2Vec.load(model)\ntext\u003d\u0027this is a sample text\u0027\nvec\u003dd2v_model.infer_vector(text,alpha\u003dstart_alpha, steps\u003dinfer_epoch)\nprint(len(vec))",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "300\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1539372828917_-1764674629",
+      "id": "20181012-163348_1904670640",
+      "dateCreated": "Oct 12, 2018 4:33:48 PM",
+      "dateStarted": "Oct 16, 2018 8:55:31 AM",
+      "dateFinished": "Oct 16, 2018 8:55:31 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "spark_topks \u003d pd.read_csv(\u0027recsys-2017-tutorial/spark_topks_mimic_80-20.csv\u0027)\ntrain_batch \u003d pd.read_csv(\u0027train_batch.csv\u0027, header\u003dNone, names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027])\ntest_batch \u003d pd.read_csv(\u0027test_batch.csv\u0027, header\u003dNone, names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027])\n\ntest_relevant \u003d test_batch[test_batch.user.isin(train_batch.user)]\ntest_relevant[\u0027score\u0027]\u003d1",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539437466352_-11679319",
+      "id": "20181013-103106_1981778219",
+      "dateCreated": "Oct 13, 2018 10:31:06 AM",
+      "dateStarted": "Oct 16, 2018 8:55:32 AM",
+      "dateFinished": "Oct 16, 2018 8:55:32 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário de doenças com seus respectivos vetores.\n\nwith open(\u0027diagnoses2.csv\u0027) as csvfile:\n    \n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    dictionary \u003d {}\n    diagnoses \u003d []\n    for row in readCSV:\n        text \u003d row[2].lower()\n\n        vector \u003d d2v_model.infer_vector(text,alpha\u003dstart_alpha, steps\u003dinfer_epoch)\n        if len(vector) \u003e 0:\n            \n            num \u003d row[0]\n            num \u003d re.sub(\u0027E\u0027, \u002732\u0027, num)\n            num \u003d re.sub(\u0027V\u0027, \u002786\u0027, num)\n            \n            dictionary.update({num: vector})\n            diagnoses.append(num)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:25 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539372790555_-1399040580",
+      "id": "20181012-163310_1362489551",
+      "dateCreated": "Oct 12, 2018 4:33:10 PM",
+      "dateStarted": "Oct 16, 2018 8:55:32 AM",
+      "dateFinished": "Oct 16, 2018 8:55:38 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário dos pacientes e as respectivas doenças no período de teste.\n\nwith open(\u0027test_data.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    \n    dic_admissions \u003d {}\n    admissions \u003d []\n\n    for row in readCSV:\n        #if row[2] in diagnoses:\n        paciente \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[1])\n        doenca \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[2])\n        if paciente not in admissions:\n            admissions.append(paciente)\n            vector \u003d []\n            vector.append(doenca)\n            dic_admissions.update({paciente: vector})\n        else:\n            vector \u003d dic_admissions.get(paciente)\n            vector.append(doenca)\n            dic_admissions.update({paciente: vector})",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:26 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539437830998_1169791487",
+      "id": "20181013-103710_23101597",
+      "dateCreated": "Oct 13, 2018 10:37:10 AM",
+      "dateStarted": "Oct 16, 2018 8:55:33 AM",
+      "dateFinished": "Oct 16, 2018 8:55:38 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário dos pacientes e as respectivas doenças recomendadas.\n\ndef top_recomended_ALS(number):\n    \n    dic_recommend \u003d {}\n    recomend \u003d []\n    \n    max \u003d len(spark_topks)\n    for i in range(0, max):\n        user \u003d int(spark_topks.iloc[i][\u0027user\u0027])\n        item \u003d int(spark_topks.iloc[i][\u0027item\u0027])\n        rank \u003d int(spark_topks.iloc[i][\u0027rank\u0027])\n        if rank \u003c\u003d number:\n            if user not in recomend:\n                recomend.append(user)\n                vector \u003d []\n                vector.append(str(int(item)))\n                dic_recommend.update({str(int(user)): vector})\n            else:\n                vector \u003d dic_recommend.get(str(int(user)))\n                vector.append(str(int(item)))\n                dic_recommend.update({str(int(user)): vector})\n    return dic_recommend",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:28 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539438499005_-1609867718",
+      "id": "20181013-104819_1668449038",
+      "dateCreated": "Oct 13, 2018 10:48:19 AM",
+      "dateStarted": "Oct 16, 2018 8:55:38 AM",
+      "dateFinished": "Oct 16, 2018 8:55:38 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Retorna as n palavras com embedding mais proximo\n\ndef match_words(words_text, embedding_disease):\n    try:\n        embedding_text \u003d vec\u003dm.infer_vector(words_text,alpha\u003dstart_alpha, steps\u003dinfer_epoch)\n        result \u003d 1 - spatial.distance.cosine(embedding_text, embedding_disease)\n    except:\n        print(\u0027erro\u0027)\n        \n    return result",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:29 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539439078127_77647535",
+      "id": "20181013-105758_216298532",
+      "dateCreated": "Oct 13, 2018 10:57:58 AM",
+      "dateStarted": "Oct 16, 2018 8:55:38 AM",
+      "dateFinished": "Oct 16, 2018 8:55:38 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Compara palavra por palavra e retorna as 5 doenças mais similares\r\n\r\ndef list_most_similar(words_text, paciente, num_w2v):\r\n\r\n    for exp in regular_expressions:\r\n        words_text \u003d re.sub(exp, \u0027 \u0027, words_text)\r\n\r\n    lista \u003d []\r\n    most_similar \u003d []\r\n    d \u003d dictionary\r\n    recomendações \u003d dic_recommend.get(paciente)\r\n    \r\n    print(paciente, recomendações)\r\n\r\n    if recomendações is not None:\r\n        for k, v in d.items():\r\n            print(k, v)\r\n            if k in recomendações:\r\n                try:\r\n                    value \u003d match_words(words_text, v)\r\n                    print(k, \u0027value\u0027, value)\r\n                    tupla \u003d (k, value)\r\n                    lista.append(tupla)\r\n                    print(\u0027lista\u0027, lista)\r\n                except:\r\n                    erro \u003d 1\r\n        \r\n        if(len(lista) \u003e 0):\r\n            lista \u003d sorted(lista, key\u003dlambda x: x[1], reverse\u003dTrue)\r\n            for i in range (0, num_w2v):\r\n                if(len(lista) \u003e i):\r\n                    most_similar.append(lista[i][0])\r\n                    \r\n    print(most_similar)\r\n    \r\n    return most_similar",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:30 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539438409302_666167212",
+      "id": "20181013-104649_182643604",
+      "dateCreated": "Oct 13, 2018 10:46:49 AM",
+      "dateStarted": "Oct 16, 2018 8:55:39 AM",
+      "dateFinished": "Oct 16, 2018 8:55:39 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "def create_dataframe(user, itens):\n\n    max \u003d len(itens)\n    users \u003d []\n    ranks \u003d [] \n    \n    for i in range(0, max):\n        users.append(int(user))\n        ranks.append(i + 1)\n        itens[i] \u003d int(itens[i])\n                \n                \n    d \u003d {\n        \u0027user\u0027 : pd.Series(users, index\u003d[*(range(0, max))] ),\n        \u0027item\u0027 : pd.Series(itens, index\u003d[*(range(0, max))] ),\n        \u0027rank\u0027 : pd.Series(ranks, index\u003d[*(range(0, max))] )\n    }\n    \n    dataframe \u003d pd.DataFrame(d)\n    \n    return dataframe",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:31 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539439715408_1796059240",
+      "id": "20181013-110835_783439997",
+      "dateCreated": "Oct 13, 2018 11:08:35 AM",
+      "dateStarted": "Oct 16, 2018 8:55:39 AM",
+      "dateFinished": "Oct 16, 2018 8:55:39 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "def ordena_dataframe(df):\n    max \u003d len(df[\u0027item\u0027])\n    users \u003d df[\u0027user\u0027].tolist()\n    itens \u003d df[\u0027item\u0027].tolist()\n    ranks \u003d df[\u0027rank\u0027].tolist()\n\n    d \u003d {\n        \u0027user\u0027 : pd.Series(users, index\u003d[*(range(0, max))] ),\n        \u0027item\u0027 : pd.Series(itens, index\u003d[*(range(0, max))] ),\n        \u0027rank\u0027 : pd.Series(ranks, index\u003d[*(range(0, max))] )\n    }\n    \n    dataframe \u003d pd.DataFrame(d)\n    \n    return dataframe",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:33 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539439726536_-1736119553",
+      "id": "20181013-110846_1336793532",
+      "dateCreated": "Oct 13, 2018 11:08:46 AM",
+      "dateStarted": "Oct 16, 2018 8:55:39 AM",
+      "dateFinished": "Oct 16, 2018 8:55:39 AM",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Teste da técnica de Word Embeddings\r\n\r\nfile \u003d open(\"resultados_doc2Vec_News_1016.csv\", \"w\")\r\n\r\n\r\nnum_ALS \u003d [1, 2, 3, 4, 5]\r\nnum_Word2Vec \u003d [1, 2, 3, 4, 5]\r\n\r\nfor als in num_ALS:\r\n    dic_recommend \u003d top_recomended_ALS(als)\r\n    \r\n    for w2v in num_Word2Vec:\r\n\r\n            \r\n        if als \u003e\u003d w2v:\r\n            \r\n            i \u003d tp \u003d fp \u003d fn \u003d 0\r\n            data_old \u003d paciente_old \u003d 0\r\n            precision \u003d recall \u003d scores \u003d 0\r\n            \r\n            dataframe \u003d pd.DataFrame(columns\u003d[\u0027user\u0027,\u0027item\u0027,\u0027rank\u0027])\r\n\r\n            with open(\u0027test_data_20181016e, delimiter\u003d\u0027,\u0027)\r\n            \r\n                for row in readCSV:\r\n            \r\n                    data \u003d row[0]\r\n                    paciente \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[1])\r\n                    doenca \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[2])\r\n                    \r\n                    if data !\u003d data_old or paciente !\u003d paciente_old:\r\n                        \r\n                        data_old \u003d data\r\n                        paciente_old \u003d paciente\r\n            \r\n                        list \u003d dic_admissions.get(paciente)\r\n            \r\n                        if list is not None:\r\n                            valido \u003d False\r\n                            for x in list:\r\n                                if x in diagnoses:\r\n                                    valido \u003d True\r\n                                    \r\n                            if valido \u003d\u003d True:\r\n                                \r\n                                if als \u003e w2v:\r\n                                \r\n                                    only_present \u003d row[3]\r\n                                    diseases1 \u003d list_most_similar(only_present.lower(), paciente, w2v)\r\n                                    \r\n                                    if diseases1 !\u003d []:\r\n                                        pos \u003d 0\r\n                                        for d in diseases1:\r\n                                            if (d in list):\r\n                                                tp \u003d tp + 1\r\n                                                pos \u003d pos + 1\r\n                                            else:\r\n                                                fp \u003d fp + 1\r\n                \r\n                                        fn \u003d fn + (len(list) - pos)\r\n                                        \r\n                                        precision \u003d round(100 * tp / (tp + fp), 2)\r\n                                        recall \u003d round(100 * tp / (tp + fn), 2)\r\n                                        \r\n                                        df \u003d create_dataframe(paciente, diseases1)\r\n                \r\n                                        frames \u003d [dataframe, df]\r\n                                        dataframe \u003d pd.concat(frames)\r\n                                else:\r\n                                    \r\n                                    d \u003d dictionary\r\n                                    diseases1 \u003d dic_recommend.get(str(int(paciente)))\r\n                                    \r\n                                    if diseases1 is not None and diseases1 !\u003d []:\r\n                                        pos \u003d 0\r\n                                        for d in diseases1:\r\n                                            if (d in list):\r\n                                                tp \u003d tp + 1\r\n                                                pos \u003d pos + 1\r\n                                            else:\r\n                                                fp \u003d fp + 1\r\n                \r\n                                        fn \u003d fn + (len(list) - pos) #menor(len(list) - pos, w2v)\r\n                                        \r\n                                        precision \u003d round(100 * tp / (tp + fp), 2)\r\n                                        recall \u003d round(100 * tp / (tp + fn), 2)\r\n                                        \r\n                                        df \u003d create_dataframe(paciente, diseases1)\r\n                \r\n                                        frames \u003d [dataframe, df]\r\n                                        dataframe \u003d pd.concat(frames)\r\n\r\n\r\n                dataframe \u003d ordena_dataframe(dataframe)\r\n                score_list \u003d [NdcgScore(test_relevant, topks) for topks in [dataframe]]\r\n                #NdcgScore(test_relevant, dataframe)\r\n                ndcg \u003d score_list[0]\r\n                \r\n                print(\u0027ALS:\u0027, als, \u0027Word2Vec\u0027, w2v )\r\n                print(\u0027Precision:\u0027, precision, \u0027%\u0027, \u0027Recall:\u0027, recall, \u0027Ndcg:\u0027, ndcg, \u0027 - \u0027, tp, \u0027/\u0027, fp, \u0027/\u0027, fn, ndcg)\r\n                file.write(\u0027\u0027 + str(als) + \u0027, \u0027 + str(w2v)  + \u0027, \u0027 + str(precision) + \u0027, \u0027 + str(recall)  + \u0027, \u0027 + str(ndcg)  +\u0027\\n\u0027)\r\n\r\nfile.close()\r\n\r\n\r\n",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 7:57:24 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python",
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "ALS: 1 Word2Vec 1\nPrecision: 54.76 % Recall: 2.82 Ndcg: 0.30656286807516775  -  23 / 19 / 792 0.30656286807516775\nALS: 2 Word2Vec 1\nPrecision: 54.76 % Recall: 2.82 Ndcg: 0.2682066551567977  -  23 / 19 / 792 0.2682066551567977\nALS: 2 Word2Vec 2\nPrecision: 47.62 % Recall: 4.91 Ndcg: 0.4378030397577447  -  40 / 44 / 775 0.4378030397577447\nALS: 3 Word2Vec 1\nPrecision: 45.24 % Recall: 2.33 Ndcg: 0.1968723935664231  -  19 / 23 / 796 0.1968723935664231\nerro\nerro\nerro\nALS: 3 Word2Vec 2\nPrecision: 43.9 % Recall: 4.51 Ndcg: 0.3209471621803254  -  36 / 46 / 762 0.3209471621803254\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Traceback (most recent call last):\n  File \"/tmp/zeppelin_python-8789340034309859575.py\", line 270, in \u003cmodule\u003e\n    exec(code, _zcUserQueryNameSpace)\n  File \"\u003cstdin\u003e\", line 61, in \u003cmodule\u003e\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/reshape/concat.py\", line 226, in concat\n    return op.get_result()\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/reshape/concat.py\", line 423, in get_result\n    copy\u003dself.copy)\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/internals.py\", line 5421, in concatenate_block_managers\n    concatenate_join_units(join_units, concat_axis, copy\u003dcopy),\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/internals.py\", line 5579, in concatenate_join_units\n    concat_values \u003d _concat._concat_compat(to_concat, axis\u003dconcat_axis)\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/dtypes/concat.py\", line 145, in _concat_compat\n    def is_nonempty(x):\n  File \"/tmp/zeppelin_python-8789340034309859575.py\", line 189, in handler_stop_signals\n    sys.exit(\"Got signal : \" + str(sig))\nSystemExit: Got signal : 2\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/tmp/zeppelin_python-8789340034309859575.py\", line 282, in \u003cmodule\u003e\n    raise Exception(traceback.format_exc())\nException: Traceback (most recent call last):\n  File \"/tmp/zeppelin_python-8789340034309859575.py\", line 270, in \u003cmodule\u003e\n    exec(code, _zcUserQueryNameSpace)\n  File \"\u003cstdin\u003e\", line 61, in \u003cmodule\u003e\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/reshape/concat.py\", line 226, in concat\n    return op.get_result()\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/reshape/concat.py\", line 423, in get_result\n    copy\u003dself.copy)\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/internals.py\", line 5421, in concatenate_block_managers\n    concatenate_join_units(join_units, concat_axis, copy\u003dcopy),\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/internals.py\", line 5579, in concatenate_join_units\n    concat_values \u003d _concat._concat_compat(to_concat, axis\u003dconcat_axis)\n  File \"/home/lucas/anaconda3/envs/alpenglow-env/lib/python3.5/site-packages/pandas/core/dtypes/concat.py\", line 145, in _concat_compat\n    def is_nonempty(x):\n  File \"/tmp/zeppelin_python-8789340034309859575.py\", line 189, in handler_stop_signals\n    sys.exit(\"Got signal : \" + str(sig))\nSystemExit: Got signal : 2\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1539439514690_-1127925655",
+      "id": "20181013-110514_808861068",
+      "dateCreated": "Oct 13, 2018 11:05:14 AM",
+      "dateStarted": "Oct 16, 2018 7:28:35 AM",
+      "dateFinished": "Oct 16, 2018 7:50:01 AM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "text \u003d \u0027history of present illness history of present illness age over year old male with medical history pertinent for cad chronic systolic chf ckd and dm who presents with lower gi bleed patient began to feel ill and weak yesterday evening and began to have diarrhea diarrhea was noted to be mixed with bright red blood he thinks that he had \u003e episodes yesterday also had multiple episodes of non bloody emesis yesterday patient denies associated symptoms including chest pain shortness of breath abdominal pain patient denies any travel outside of the country recently he does report ingesting egg salad on sunday night which was apparently made with week old eggs no one else consumed the egg salad and no one else is sick in his family this morning he felt so weak that he was not able to stand up felt like his legs could not hold up his weight and so he asked his wife to call his pcp who recommended that he come to the ed in the ed patient was hemodynamically stable with brbpr in rectal vault no active bleeding was noted gi saw the patient in the ed and reccomended admission with serial crits patient was given kayelexate given elevated k on repeat chemistry and given l ivf on the floor patient was found to be sitting on sheets soaked in bright red blood a trigger was called on arrival he remained hemodynamically stable with sbp in the s and paced rhythm micu transfer was requested for closer monitoring on arrival to the micu the patient complains of feeling hungry and thirsty he has sob but notes that this is chronic for him and unchanged denies chest pain palpitations abdominal pain dysuria arthralgias or myalgias  history of present illness history of present illness age over year old male with medical history pertinent for cad chronic systolic chf ckd and dm who presents with lower gi bleed patient began to feel ill and weak yesterday evening and began to have diarrhea diarrhea was noted to be mixed with bright red blood he thinks that he had \u003e episodes yesterday also had multiple episodes of non bloody emesis yesterday patient denies associated symptoms including chest pain shortness of breath abdominal pain patient denies any travel outside of the country recently he does report ingesting egg salad on sunday night which was apparently made with week old eggs no one else consumed the egg salad and no one else is sick in his family this morning he felt so weak that he was not able to stand up felt like his legs could not hold up his weight and so he asked his wife to call his pcp who recommended that he come to the ed in the ed patient was hemodynamically stable with brbpr in rectal vault no active bleeding was noted gi saw the patient in the ed and reccomended admission with serial crits patient was given kayelexate given elevated k on repeat chemistry and given l ivf on the floor patient was found to be sitting on sheets soaked in bright red blood a trigger was called on arrival he remained hemodynamically stable with sbp in the s and paced rhythm micu transfer was requested for closer monitoring on arrival to the micu the patient complains of feeling hungry and thirsty he has sob but notes that this is chronic for him and unchanged denies chest pain palpitations abdominal pain dysuria arthralgias or myalgias\u0027\nvec\u003dm.infer_vector(text,alpha\u003dstart_alpha, steps\u003dinfer_epoch)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 15, 2018 3:50:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539439591651_-930656215",
+      "id": "20181013-110631_1008482611",
+      "dateCreated": "Oct 13, 2018 11:06:31 AM",
+      "dateStarted": "Oct 13, 2018 12:05:22 PM",
+      "dateFinished": "Oct 13, 2018 12:05:30 PM",
+      "status": "ABORT",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "",
+      "user": "anonymous",
+      "dateUpdated": "Oct 15, 2018 3:50:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "array([ 0.469514  , -0.31013557, -0.02094939,  0.04508136,  0.24983387,\n        0.9735177 , -0.200885  ,  0.2577634 ,  0.43297574, -0.13718605,\n       -0.416231  , -0.38292947, -0.03236165,  0.49510515,  0.4918546 ,\n        0.75505453,  0.27999005, -0.2917421 ,  0.5155734 , -0.3204896 ,\n       -0.6830564 ,  0.7046347 ,  0.44626802,  0.6840939 ,  0.08240257,\n       -0.43426272, -0.05038092, -0.3789152 ,  0.3937492 , -0.31527895,\n       -0.9171192 , -0.39016616,  0.34109563, -0.06143745,  0.16485408,\n        0.10158953, -0.01628845,  0.21639515, -0.5791246 , -0.38778377,\n       -0.28158787, -0.5277734 , -0.20370078,  0.69065285, -0.5830862 ,\n        0.18450624, -0.85232025,  0.26385266, -0.21957283,  1.0045784 ,\n       -0.84554756, -0.05050882,  0.56650794,  0.05065163, -0.1641838 ,\n       -0.3687567 ,  0.14734006,  0.08735168,  0.44505316, -0.3361308 ,\n        0.7267654 , -0.30143258,  0.01457679,  0.24310243, -0.45257744,\n       -0.30476627,  0.11349552, -0.44767216,  0.6035803 ,  0.03433803,\n        0.20180869, -0.27429128, -0.02407607,  0.15258741, -0.40660053,\n        0.01337841,  0.1801654 ,  0.44034836, -0.5839079 ,  0.45510772,\n       -0.14866032, -0.73773354, -0.6554212 , -0.42283657, -0.0661719 ,\n        0.36900282,  0.29128268, -0.17254816,  0.02584209,  0.24887091,\n        0.10837786, -0.11918704, -0.53315216, -0.02889051, -0.19760206,\n        0.6117522 , -0.40594018,  0.5333427 ,  0.14929242, -0.41767457,\n       -0.14205973,  0.8273591 , -0.6547427 ,  0.19117835,  0.575272  ,\n        0.15098909, -0.11669456,  0.2087309 , -0.217128  ,  0.31502748,\n       -0.6415822 , -0.15403895, -0.43964282, -0.03145287, -0.01088881,\n       -0.15219705, -0.19878337, -0.01664533, -0.07553928,  0.02896454,\n       -0.52118164,  0.2132341 , -0.07025818,  0.23978767, -0.6917224 ,\n       -0.58516335,  0.38933733,  0.24518904,  0.18957442, -0.42739254,\n       -0.57584745, -0.09290825,  0.39080974, -0.00772468, -0.66512686,\n        0.28731295,  0.10238823, -0.3562253 , -0.58905745, -0.82186204,\n        0.3013214 ,  0.16455887, -0.31725532,  0.41496933,  0.62108046,\n       -0.31576118,  0.00761373, -0.5561011 , -0.12179966, -0.17333572,\n       -0.26684025,  0.56261885, -0.22415146, -0.39916512,  0.23779346,\n       -0.03718388, -0.43111792,  0.53299475,  0.4327792 , -0.70588416,\n        0.8375139 ,  0.9751311 ,  0.12108305,  0.57248855,  0.4424568 ,\n        0.24624887, -0.11178201,  0.19746412, -0.02728517,  0.4163528 ,\n       -1.1784837 ,  0.21999668, -0.75604296, -0.1196109 , -1.4318149 ,\n       -0.04914152, -0.42141217,  0.02020346,  0.19569214, -0.5240455 ,\n        0.5544504 ,  0.5877993 , -0.59132177,  0.44538105,  0.31283733,\n        0.4868868 ,  0.4890119 ,  0.18028663,  0.12062849,  0.4143856 ,\n       -0.15317528, -0.81863415,  0.4279918 , -0.19890705,  0.82940036,\n        0.37876257,  0.18246946,  0.1033725 ,  0.02372958, -0.16949025,\n        0.41858205, -0.28383943,  0.44099024, -0.09291114,  0.38836002,\n        0.2221017 , -0.66811067,  0.67193943,  0.42034718, -0.2767536 ,\n        0.14456186,  0.27243203, -0.3785335 , -0.3789441 , -0.17214653,\n       -0.2830569 ,  0.50243014,  0.03757026, -0.6476335 ,  0.09112203,\n        0.45003787, -0.7600059 , -0.27521488, -0.42350668, -0.69728327,\n       -0.57149893,  0.21537906, -0.8585142 , -0.12237969,  0.6651181 ,\n        0.10644489,  0.7650467 , -0.626857  ,  0.4135821 , -0.26250818,\n       -0.35412896,  0.27277493, -0.21932372, -0.4169404 ,  0.31747144,\n       -0.9362304 ,  0.2405407 , -1.4539639 , -0.7405307 , -0.8678109 ,\n        0.7090738 ,  0.00735028,  0.2797643 ,  0.58585614,  0.1286501 ,\n        0.19371136, -0.04802676, -0.37715656, -0.10823883,  0.575606  ,\n        0.3843572 , -0.10815728, -0.48863205, -0.78984374, -0.41404524,\n        0.56332713,  0.18882221, -1.0006907 , -0.20466766,  0.39326656,\n       -0.43426505,  0.04717621,  0.15878661,  0.40196136, -0.41463903,\n       -0.49920154, -0.24347061, -0.04204297,  0.17382337, -0.03337771,\n       -0.5579955 ,  0.3232399 ,  0.48226726, -0.08484548,  0.10024494,\n       -0.41364765, -0.2227071 ,  0.48078582, -0.6285745 , -0.32516262,\n        0.9415405 , -0.789507  ,  0.05985978, -0.82831067, -0.11156046,\n       -0.0256736 , -0.16577928, -0.23148082,  0.48246554, -0.50832874,\n       -0.15172617,  0.4432757 , -0.53485215,  0.02029454, -0.61920035],\n      dtype\u003dfloat32)\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1539440848853_-1429068028",
+      "id": "20181013-112728_118391353",
+      "dateCreated": "Oct 13, 2018 11:27:28 AM",
+      "dateStarted": "Oct 13, 2018 11:58:02 AM",
+      "dateFinished": "Oct 13, 2018 11:58:09 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Teste da técnica de Word Embeddings\r\n\r\npresent \u003d [\u0027History of Present Illness:\\n(.+\\n)+\u0027]\r\npast \u003d [\u0027Past Medical History:\\n(.+\\n\\n?)+\u0027]\r\n\r\n\r\nnum_ALS \u003d [1, 2, 3, 4, 5, 20, 30, 40, 50]\r\nnum_Word2Vec \u003d [1, 2, 3, 4, 5]\r\n\r\nals \u003d 40\r\ndic_recommend \u003d top_recomended_ALS(als)\r\nw2v \u003d 40\r\nnum_words \u003d 2\r\n\r\ni \u003d tp \u003d fp \u003d fn \u003d ngcg \u003d scores \u003d 0\r\ndata_old \u003d paciente_old \u003d 0\r\ntam \u003d scores \u003d 0\r\n\r\ndataframe \u003d pd.DataFrame(columns\u003d[\u0027user\u0027,\u0027item\u0027,\u0027rank\u0027])\r\n\r\n\r\nwith open(\u0027test_data_20181006.csv\u0027) as csvfile:\r\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\r\n    \r\n    tam \u003d 0\r\n    for row in readCSV:\r\n    \r\n        data \u003d row[0]\r\n        paciente \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[1])\r\n        doenca \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[2])\r\n        \r\n        if data !\u003d data_old or paciente !\u003d paciente_old:\r\n    \r\n            data_old \u003d data\r\n            paciente_old \u003d paciente\r\n    \r\n            list \u003d dic_admissions.get(paciente)\r\n    \r\n            if list is not None:\r\n                valido \u003d False\r\n                for x in list:\r\n                    if x in diagnoses:\r\n                        valido \u003d True\r\n                        \r\n                if valido \u003d\u003d True:\r\n                    \r\n                    only_present \u003d row[3]\r\n                    diseases1 \u003d list_most_similar(only_present, paciente, w2v)\r\n                    #print(paciente, diseases1)\r\n\r\n                    if diseases1 !\u003d []:\r\n                        pos \u003d 0\r\n                        for d in diseases1:\r\n                            if (d in list):\r\n                                tp \u003d tp + 1\r\n                                pos \u003d pos + 1\r\n                            else:\r\n                                fp \u003d fp + 1\r\n    \r\n                        fn \u003d fn + (len(list) - pos) #menor(len(list) - pos, w2v)\r\n                        \r\n                        precision \u003d round(100 * tp / (tp + fp), 2)\r\n                        recall \u003d round(100 * tp / (tp + fn), 2)\r\n                        \r\n                        df \u003d create_dataframe(paciente, diseases1)\r\n    \r\n                        frames \u003d [dataframe, df]\r\n                        dataframe \u003d pd.concat(frames)\r\n                        tam \u003d tam + 1 \r\n                    \r\n                    \r\ndataframe \u003d ordena_dataframe(dataframe)\r\nprint(dataframe)\r\n\r\nscore_list \u003d [NdcgScore(test_relevant, topks) for topks in [dataframe]]\r\n\r\nndcg \u003d score_list[0]\r\n\r\nprint(\u0027Words:\u0027, num_words, \u0027ALS:\u0027, als, \u0027Word2Vec\u0027, w2v )\r\nprint(\u0027Precision:\u0027, precision, \u0027%\u0027, \u0027Recall:\u0027, recall, \u0027Ndcg:\u0027, ndcg, \u0027 - \u0027, tp, \u0027/\u0027, fp, \u0027/\u0027, fn, ndcg)\r\n",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 9:28:46 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python",
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "7666 [\u00275849\u0027, \u0027412\u0027, \u0027311\u0027, \u00274439\u0027, \u00272762\u0027, \u00273572\u0027, \u00274241\u0027, \u00272749\u0027, \u00275789\u0027, \u00274254\u0027, \u0027496\u0027, \u00277907\u0027, \u00273320\u0027, \u00279971\u0027, \u00272764\u0027, \u00272763\u0027, \u00275533\u0027, \u00275363\u0027, \u00272724\u0027, \u00275119\u0027, \u00277895\u0027, \u00275781\u0027, \u00275185\u0027, \u00273484\u0027, \u00272761\u0027, \u00277850\u0027, \u00274414\u0027, \u00273485\u0027, \u00274139\u0027, \u00274019\u0027, \u00275712\u0027, \u00275722\u0027, \u00275121\u0027, \u00279974\u0027, \u0027430\u0027, \u00279982\u0027, \u0027570\u0027, \u00274240\u0027, \u00275845\u0027] [\u0027570\u0027, \u00274414\u0027, \u00277850\u0027, \u00275363\u0027, \u00273572\u0027, \u00275712\u0027, \u0027430\u0027, \u00277907\u0027, \u00275533\u0027, \u00272764\u0027, \u00273485\u0027, \u00275722\u0027, \u00275119\u0027, \u00277895\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00275845\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027]\n12798 [\u00275849\u0027, \u00272762\u0027, \u00272761\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00277907\u0027, \u00272764\u0027, \u00273572\u0027, \u00272763\u0027, \u00275533\u0027, \u00275363\u0027, \u00273320\u0027, \u00274241\u0027, \u00277895\u0027, \u00275712\u0027, \u00274019\u0027, \u00275722\u0027, \u00275119\u0027, \u0027570\u0027, \u00275185\u0027, \u00279971\u0027, \u00273484\u0027, \u00272749\u0027, \u00275781\u0027, \u00277850\u0027, \u00272724\u0027, \u00274414\u0027, \u00273485\u0027, \u0027430\u0027, \u00275121\u0027, \u00279974\u0027, \u00279982\u0027, \u0027311\u0027, \u00274139\u0027, \u0027496\u0027, \u00274240\u0027, \u0027412\u0027, \u00275845\u0027] [\u0027570\u0027, \u00272762\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00273572\u0027, \u00275722\u0027, \u00275119\u0027, \u00273485\u0027, \u00277895\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00275845\u0027, \u00279971\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00273320\u0027, \u00274139\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u00275121\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u0027412\u0027, \u0027430\u0027]\n24573 [\u0027496\u0027, \u00279971\u0027, \u00274439\u0027, \u00274241\u0027, \u00277907\u0027, \u00275712\u0027, \u00274254\u0027, \u00272763\u0027, \u00275185\u0027, \u00275121\u0027, \u00274414\u0027, \u00279974\u0027, \u00275781\u0027, \u00275722\u0027, \u0027570\u0027, \u00273485\u0027, \u00274139\u0027, \u00279982\u0027, \u00275533\u0027, \u0027430\u0027, \u00273572\u0027, \u00272761\u0027, \u00277895\u0027, \u00274019\u0027, \u00273320\u0027, \u00272724\u0027, \u00272764\u0027, \u0027311\u0027, \u00275849\u0027, \u00274240\u0027, \u00273484\u0027, \u00277850\u0027, \u00272762\u0027, \u00275363\u0027, \u00275845\u0027, \u00275119\u0027, \u00272749\u0027, \u0027412\u0027, \u00275789\u0027] [\u00274439\u0027, \u00274414\u0027, \u00275363\u0027, \u00277850\u0027, \u00275712\u0027, \u0027412\u0027, \u00273572\u0027, \u00274139\u0027, \u00277907\u0027, \u00275722\u0027, \u00277895\u0027, \u00273485\u0027, \u00274240\u0027, \u00275119\u0027, \u00272763\u0027, \u00275533\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u0027496\u0027, \u00273320\u0027, \u00272749\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u00275789\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u0027570\u0027, \u00275121\u0027, \u00274254\u0027, \u00274241\u0027, \u0027311\u0027, \u00272762\u0027, \u0027430\u0027]\n10569 [\u00275849\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00272762\u0027, \u00272761\u0027, \u00277907\u0027, \u00273572\u0027, \u00272764\u0027, \u00275533\u0027, \u00275363\u0027, \u00273320\u0027, \u00272763\u0027, \u00277895\u0027, \u00275119\u0027, \u00274241\u0027, \u00279971\u0027, \u00272749\u0027, \u00273484\u0027, \u00275712\u0027, \u00275722\u0027, \u00275781\u0027, \u00275185\u0027, \u00277850\u0027, \u00272724\u0027, \u00274414\u0027, \u00274019\u0027, \u00273485\u0027, \u0027311\u0027, \u00275121\u0027, \u00274240\u0027, \u0027430\u0027, \u00279974\u0027, \u0027496\u0027, \u0027570\u0027, \u00279982\u0027, \u00274139\u0027, \u0027412\u0027, \u00275845\u0027] [\u00277850\u0027, \u00275712\u0027, \u00274254\u0027, \u00275789\u0027, \u00273572\u0027, \u00277907\u0027, \u00274139\u0027, \u00277895\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00272749\u0027, \u00275845\u0027, \u00272764\u0027, \u00275363\u0027, \u00279982\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n55992 [\u00274019\u0027, \u00275849\u0027, \u00275789\u0027, \u00274439\u0027, \u00277907\u0027, \u00279971\u0027, \u00274254\u0027, \u00272761\u0027, \u00273484\u0027, \u00272762\u0027, \u00275363\u0027, \u00272764\u0027, \u00275185\u0027, \u00275533\u0027, \u00274241\u0027, \u00273485\u0027, \u00273320\u0027, \u00273572\u0027, \u00272763\u0027, \u00277895\u0027, \u00272749\u0027, \u00277850\u0027, \u0027430\u0027, \u00275119\u0027, \u00274139\u0027, \u00275781\u0027, \u00272724\u0027, \u00274414\u0027, \u00275722\u0027, \u00275121\u0027, \u0027570\u0027, \u00279982\u0027, \u00279974\u0027, \u0027311\u0027, \u00275712\u0027, \u00274240\u0027, \u0027496\u0027, \u0027412\u0027, \u00275845\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u0027430\u0027, \u00277895\u0027, \u00274240\u0027, \u00275533\u0027, \u00275119\u0027, \u00272763\u0027, \u00272724\u0027, \u00273485\u0027, \u00273572\u0027, \u00275722\u0027, \u00274139\u0027, \u00275845\u0027, \u00275185\u0027, \u00279982\u0027, \u00272749\u0027, \u00272764\u0027, \u00273320\u0027, \u00273484\u0027, \u0027496\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00275121\u0027, \u00274241\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027]\n12567 [\u00272724\u0027, \u00274019\u0027, \u0027311\u0027, \u0027412\u0027, \u00272762\u0027, \u00274241\u0027, \u00273572\u0027, \u00275845\u0027, \u00272749\u0027, \u00274439\u0027, \u00279971\u0027, \u00274139\u0027, \u00275185\u0027, \u0027570\u0027, \u00272763\u0027, \u00274240\u0027, \u00273320\u0027, \u00275363\u0027, \u00275789\u0027, \u00275781\u0027, \u00275722\u0027, \u00275849\u0027, \u00277850\u0027, \u00273485\u0027, \u00274254\u0027, \u00275533\u0027, \u00273484\u0027, \u0027430\u0027, \u00275712\u0027, \u00274414\u0027, \u00272764\u0027, \u00279974\u0027, \u00277895\u0027, \u00275121\u0027, \u00279982\u0027, \u00277907\u0027, \u0027496\u0027, \u00272761\u0027, \u00275119\u0027] [\u00277850\u0027, \u00275789\u0027, \u00275363\u0027, \u00277895\u0027, \u00273320\u0027, \u00275712\u0027, \u00275849\u0027, \u00272764\u0027, \u00273572\u0027, \u00277907\u0027, \u00275185\u0027, \u00273484\u0027, \u0027496\u0027, \u00273485\u0027, \u00275722\u0027, \u00275119\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275845\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00279974\u0027, \u00279971\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n70745 [\u00272724\u0027, \u00274019\u0027, \u0027412\u0027, \u00275119\u0027, \u00274241\u0027, \u00272749\u0027, \u00272762\u0027, \u00279971\u0027, \u00274439\u0027, \u0027496\u0027, \u00273572\u0027, \u00274139\u0027, \u00275185\u0027, \u00275845\u0027, \u00275849\u0027, \u00275121\u0027, \u00273484\u0027, \u00279982\u0027, \u00277850\u0027, \u00275781\u0027, \u00274414\u0027, \u00279974\u0027, \u00273485\u0027, \u00273320\u0027, \u00274240\u0027, \u00275789\u0027, \u0027430\u0027, \u00275533\u0027, \u00275363\u0027, \u00274254\u0027, \u00277895\u0027, \u0027311\u0027, \u0027570\u0027, \u00272764\u0027, \u00272763\u0027, \u00277907\u0027, \u00275722\u0027, \u00275712\u0027, \u00272761\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275781\u0027, \u00275712\u0027, \u00275121\u0027, \u0027311\u0027, \u00273572\u0027, \u00277907\u0027, \u0027412\u0027, \u0027430\u0027, \u00277895\u0027, \u00275533\u0027, \u00273485\u0027, \u00275119\u0027, \u00279982\u0027, \u00274139\u0027, \u00275722\u0027, \u00275185\u0027, \u00275845\u0027, \u00272764\u0027, \u00272763\u0027, \u00274240\u0027, \u00272749\u0027, \u00272724\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00274254\u0027, \u00272762\u0027]\n75824 [\u00274019\u0027, \u00275849\u0027, \u00274241\u0027, \u00275119\u0027, \u0027412\u0027, \u00272762\u0027, \u00274439\u0027, \u00275789\u0027, \u00272724\u0027, \u00272749\u0027, \u00273572\u0027, \u00275185\u0027, \u00273484\u0027, \u0027496\u0027, \u00277907\u0027, \u00279971\u0027, \u00273320\u0027, \u00275363\u0027, \u00273485\u0027, \u00272764\u0027, \u00275533\u0027, \u00275781\u0027, \u00277850\u0027, \u00277895\u0027, \u00274139\u0027, \u00272763\u0027, \u0027430\u0027, \u00279974\u0027, \u00275121\u0027, \u00274414\u0027, \u00279982\u0027, \u0027311\u0027, \u00274254\u0027, \u0027570\u0027, \u00275722\u0027, \u00275712\u0027, \u00275845\u0027, \u00272761\u0027, \u00274240\u0027] [\u0027412\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00273572\u0027, \u00275533\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00277850\u0027, \u00277895\u0027, \u00274240\u0027, \u00272763\u0027, \u00275845\u0027, \u00272724\u0027, \u00272764\u0027, \u00275185\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027430\u0027]\n3952 [\u00275849\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00272762\u0027, \u00272761\u0027, \u00277907\u0027, \u00273572\u0027, \u00272764\u0027, \u00275533\u0027, \u00275363\u0027, \u00273320\u0027, \u00272763\u0027, \u00277895\u0027, \u00275119\u0027, \u00274241\u0027, \u00279971\u0027, \u00272749\u0027, \u00273484\u0027, \u00275712\u0027, \u00275722\u0027, \u00275781\u0027, \u00275185\u0027, \u00277850\u0027, \u00272724\u0027, \u00274414\u0027, \u00274019\u0027, \u00273485\u0027, \u0027311\u0027, \u00275121\u0027, \u00274240\u0027, \u0027430\u0027, \u00279974\u0027, \u0027496\u0027, \u0027570\u0027, \u00279982\u0027, \u00274139\u0027, \u0027412\u0027, \u00275845\u0027] [\u00274019\u0027, \u00274241\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00273572\u0027, \u00277907\u0027, \u00275849\u0027, \u00275722\u0027, \u00273485\u0027, \u00277895\u0027, \u00274240\u0027, \u00275533\u0027, \u00275119\u0027, \u00272763\u0027, \u00272764\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00272761\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n15570 [\u00272762\u0027, \u00274019\u0027, \u00275845\u0027, \u0027570\u0027, \u00272761\u0027, \u00275185\u0027, \u00275722\u0027, \u00275789\u0027, \u00275712\u0027, \u00274241\u0027, \u00279971\u0027, \u00275119\u0027, \u00272763\u0027, \u00272749\u0027, \u00273572\u0027, \u00274139\u0027, \u00277850\u0027, \u00277895\u0027, \u00274439\u0027, \u0027430\u0027, \u00273485\u0027, \u00273484\u0027, \u00275781\u0027, \u00274240\u0027, \u00279974\u0027, \u00275363\u0027, \u0027311\u0027, \u00272724\u0027, \u00275121\u0027, \u00279982\u0027, \u00273320\u0027, \u00274414\u0027, \u00272764\u0027, \u00277907\u0027, \u00274254\u0027, \u00275533\u0027, \u0027496\u0027, \u0027412\u0027, \u00275849\u0027] [\u0027570\u0027, \u00275363\u0027, \u00277850\u0027, \u00275712\u0027, \u00273572\u0027, \u0027430\u0027, \u00277907\u0027, \u00275722\u0027, \u00273485\u0027, \u00277895\u0027, \u00275533\u0027, \u00275119\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00272749\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00275781\u0027, \u00274019\u0027, \u00274439\u0027, \u00274414\u0027, \u00275121\u0027, \u00274254\u0027, \u00274241\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027]\n11870 None []\n22933 [\u0027496\u0027, \u00275849\u0027, \u00274439\u0027, \u00279971\u0027, \u00274254\u0027, \u00277907\u0027, \u00274241\u0027, \u00272763\u0027, \u00275789\u0027, \u00272761\u0027, \u00275712\u0027, \u00273572\u0027, \u00272762\u0027, \u00275185\u0027, \u00275533\u0027, \u00272764\u0027, \u00275722\u0027, \u00275781\u0027, \u00274414\u0027, \u00275121\u0027, \u00277895\u0027, \u00273320\u0027, \u00279974\u0027, \u00273485\u0027, \u0027570\u0027, \u00275363\u0027, \u00274019\u0027, \u00273484\u0027, \u00275119\u0027, \u00272724\u0027, \u0027430\u0027, \u00279982\u0027, \u0027311\u0027, \u00272749\u0027, \u00277850\u0027, \u00274240\u0027, \u00274139\u0027, \u0027412\u0027, \u00275845\u0027] [\u00275363\u0027, \u00277850\u0027, \u00274241\u0027, \u00275712\u0027, \u00273572\u0027, \u00275722\u0027, \u00277907\u0027, \u00277895\u0027, \u00272763\u0027, \u00274240\u0027, \u00273485\u0027, \u00275119\u0027, \u00272724\u0027, \u00275845\u0027, \u00279982\u0027, \u00275185\u0027, \u00275533\u0027, \u00274139\u0027, \u00272764\u0027, \u00273320\u0027, \u00273484\u0027, \u00272749\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u0027496\u0027, \u00275789\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n9224 None []\n96023 None []\n96686 [\u0027311\u0027, \u00275849\u0027, \u00272724\u0027, \u0027412\u0027, \u00272762\u0027, \u00273572\u0027, \u00274241\u0027, \u00272749\u0027, \u00274439\u0027, \u00275845\u0027, \u00279971\u0027, \u00272763\u0027, \u00275789\u0027, \u00273320\u0027, \u00274254\u0027, \u00275185\u0027, \u00275363\u0027, \u00274139\u0027, \u0027570\u0027, \u00275722\u0027, \u00275781\u0027, \u00275533\u0027, \u00274240\u0027, \u00272764\u0027, \u00275712\u0027, \u00277895\u0027, \u00274019\u0027, \u00277850\u0027, \u00274414\u0027, \u00273485\u0027, \u00273484\u0027, \u0027430\u0027, \u00277907\u0027, \u00279974\u0027, \u00275121\u0027, \u00279982\u0027, \u0027496\u0027, \u00272761\u0027, \u00275119\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00274254\u0027, \u00275533\u0027, \u00277895\u0027, \u00275119\u0027, \u0027311\u0027, \u00272724\u0027, \u00273572\u0027, \u00273485\u0027, \u00275185\u0027, \u00272764\u0027, \u00272749\u0027, \u00275845\u0027, \u00275722\u0027, \u00274139\u0027, \u00273320\u0027, \u00272763\u0027, \u00274240\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00279982\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00275789\u0027, \u0027570\u0027, \u00274414\u0027, \u00274241\u0027, \u00275121\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n2338 [\u00275119\u0027, \u00275845\u0027, \u00272761\u0027, \u00274241\u0027, \u00272762\u0027, \u00272749\u0027, \u00275712\u0027, \u0027570\u0027, \u00275185\u0027, \u00274254\u0027, \u00275722\u0027, \u00279974\u0027, \u00277907\u0027, \u00275121\u0027, \u00279982\u0027, \u00272764\u0027, \u00275789\u0027, \u00273484\u0027, \u00273485\u0027, \u00277850\u0027, \u00275533\u0027, \u00274240\u0027, \u00275781\u0027, \u00272763\u0027, \u00274439\u0027, \u00274414\u0027, \u00277895\u0027, \u0027311\u0027, \u00273320\u0027, \u00275363\u0027, \u00274019\u0027, \u00273572\u0027, \u00279971\u0027, \u00272724\u0027, \u00274139\u0027, \u0027430\u0027, \u0027496\u0027, \u0027412\u0027, \u00275849\u0027] [\u00273572\u0027, \u00275712\u0027, \u00275363\u0027, \u00277850\u0027, \u00272763\u0027, \u00275722\u0027, \u00272761\u0027, \u00272724\u0027, \u00275533\u0027, \u00274240\u0027, \u00277907\u0027, \u00277895\u0027, \u00275119\u0027, \u00275185\u0027, \u00272764\u0027, \u00275845\u0027, \u00273485\u0027, \u00273320\u0027, \u00272749\u0027, \u00274139\u0027, \u00279982\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00275789\u0027, \u00274414\u0027, \u00274019\u0027, \u00275781\u0027, \u00275121\u0027, \u00274439\u0027, \u0027570\u0027, \u00274241\u0027, \u0027311\u0027, \u00274254\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n13536 None []\n19029 [\u00272761\u0027, \u00275845\u0027, \u00275712\u0027, \u0027570\u0027, \u00275722\u0027, \u00277907\u0027, \u00272763\u0027, \u00274254\u0027, \u00275789\u0027, \u00272764\u0027, \u0027412\u0027, \u00275849\u0027, \u00275533\u0027, \u00279982\u0027, \u00275363\u0027, \u00272724\u0027, \u00273320\u0027, \u0027496\u0027, \u00277895\u0027, \u00274019\u0027, \u00275781\u0027, \u00272749\u0027, \u0027430\u0027, \u00279974\u0027, \u00273485\u0027, \u00273572\u0027, \u00274414\u0027, \u00277850\u0027, \u00275121\u0027, \u0027311\u0027, \u00274139\u0027, \u00274240\u0027, \u00275185\u0027, \u00274439\u0027, \u00273484\u0027, \u00275119\u0027, \u00279971\u0027, \u00272762\u0027, \u00274241\u0027] [\u00275363\u0027, \u00275712\u0027, \u00277850\u0027, \u00277907\u0027, \u00272762\u0027, \u00274240\u0027, \u00275533\u0027, \u00272724\u0027, \u00275845\u0027, \u00273572\u0027, \u00275185\u0027, \u00275119\u0027, \u00275789\u0027, \u00273485\u0027, \u00275722\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00277895\u0027, \u00272764\u0027, \u00279971\u0027, \u00279974\u0027, \u00275849\u0027, \u00279982\u0027, \u00272763\u0027, \u0027496\u0027, \u00272761\u0027, \u00275781\u0027, \u00274019\u0027, \u00274439\u0027, \u00274414\u0027, \u00275121\u0027, \u0027570\u0027, \u0027311\u0027, \u00274254\u0027, \u00274241\u0027, \u0027412\u0027, \u0027430\u0027]\n21362 [\u00275119\u0027, \u00274241\u0027, \u00275845\u0027, \u00272749\u0027, \u00275185\u0027, \u00275712\u0027, \u00274254\u0027, \u00279974\u0027, \u00275121\u0027, \u00279982\u0027, \u00277907\u0027, \u0027570\u0027, \u00273484\u0027, \u00274240\u0027, \u00273485\u0027, \u00277850\u0027, \u00274439\u0027, \u00272764\u0027, \u00275849\u0027, \u00275533\u0027, \u00274414\u0027, \u00275781\u0027, \u00275722\u0027, \u00273320\u0027, \u00277895\u0027, \u00279971\u0027, \u00275363\u0027, \u00275789\u0027, \u00274139\u0027, \u00274019\u0027, \u0027311\u0027, \u0027430\u0027, \u00273572\u0027, \u0027496\u0027, \u00272724\u0027, \u00272763\u0027, \u0027412\u0027, \u00272761\u0027, \u00272762\u0027] [\u00274439\u0027, \u00272761\u0027, \u00275781\u0027, \u0027570\u0027, \u0027311\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00272724\u0027, \u00273572\u0027, \u00277907\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00277895\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u0027496\u0027, \u00275849\u0027, \u00275789\u0027, \u00274019\u0027, \u00274414\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n26286 None []\n76435 [\u0027311\u0027, \u00274240\u0027, \u00273572\u0027, \u00274254\u0027, \u00272761\u0027, \u00275119\u0027, \u00275712\u0027, \u00275363\u0027, \u00275849\u0027, \u00275845\u0027, \u00275533\u0027, \u00275722\u0027, \u00272763\u0027, \u00273320\u0027, \u00273485\u0027, \u00272764\u0027, \u0027496\u0027, \u0027412\u0027, \u00279971\u0027, \u00279974\u0027, \u00272749\u0027, \u0027430\u0027, \u00277907\u0027, \u00273484\u0027, \u00275781\u0027, \u00274439\u0027, \u00272724\u0027, \u00275185\u0027, \u00277850\u0027, \u00274019\u0027, \u00274414\u0027, \u00274139\u0027, \u00277895\u0027, \u00275121\u0027, \u00279982\u0027, \u00275789\u0027, \u0027570\u0027, \u00272762\u0027, \u00274241\u0027] [\u00275712\u0027, \u00277850\u0027, \u00273572\u0027, \u00275781\u0027, \u00275722\u0027, \u00275533\u0027, \u00272763\u0027, \u00275119\u0027, \u00277907\u0027, \u00273485\u0027, \u00274240\u0027, \u00277895\u0027, \u00272762\u0027, \u00272764\u0027, \u00275845\u0027, \u00275185\u0027, \u00273320\u0027, \u00279982\u0027, \u00274139\u0027, \u00272724\u0027, \u00273484\u0027, \u00272749\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u00275363\u0027, \u0027496\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00274414\u0027, \u0027570\u0027, \u00274439\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u0027412\u0027, \u0027430\u0027]\n914 None []\n11861 [\u0027311\u0027, \u00272724\u0027, \u00275849\u0027, \u00273572\u0027, \u00275363\u0027, \u00274254\u0027, \u00275533\u0027, \u00274241\u0027, \u00275712\u0027, \u00272764\u0027, \u00273320\u0027, \u00272763\u0027, \u00274439\u0027, \u00275722\u0027, \u00273485\u0027, \u00275789\u0027, \u00272749\u0027, \u00275781\u0027, \u00274240\u0027, \u00272761\u0027, \u00274019\u0027, \u00273484\u0027, \u00272762\u0027, \u0027430\u0027, \u00279974\u0027, \u00279971\u0027, \u00277850\u0027, \u00277895\u0027, \u00277907\u0027, \u00274414\u0027, \u00275185\u0027, \u00275119\u0027, \u00275121\u0027, \u0027496\u0027, \u00274139\u0027, \u00279982\u0027, \u0027570\u0027, \u00275845\u0027, \u0027412\u0027] [\u00274241\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00275789\u0027, \u00277907\u0027, \u00273572\u0027, \u00275533\u0027, \u00275722\u0027, \u00273485\u0027, \u00274240\u0027, \u00277895\u0027, \u00272763\u0027, \u00275845\u0027, \u00272724\u0027, \u00275185\u0027, \u00275119\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n11861 [\u0027311\u0027, \u00272724\u0027, \u00275849\u0027, \u00273572\u0027, \u00275363\u0027, \u00274254\u0027, \u00275533\u0027, \u00274241\u0027, \u00275712\u0027, \u00272764\u0027, \u00273320\u0027, \u00272763\u0027, \u00274439\u0027, \u00275722\u0027, \u00273485\u0027, \u00275789\u0027, \u00272749\u0027, \u00275781\u0027, \u00274240\u0027, \u00272761\u0027, \u00274019\u0027, \u00273484\u0027, \u00272762\u0027, \u0027430\u0027, \u00279974\u0027, \u00279971\u0027, \u00277850\u0027, \u00277895\u0027, \u00277907\u0027, \u00274414\u0027, \u00275185\u0027, \u00275119\u0027, \u00275121\u0027, \u0027496\u0027, \u00274139\u0027, \u00279982\u0027, \u0027570\u0027, \u00275845\u0027, \u0027412\u0027] [\u00274439\u0027, \u0027311\u0027, \u00274414\u0027, \u00279982\u0027, \u00273320\u0027, \u00275533\u0027, \u00272749\u0027, \u00277907\u0027, \u00273572\u0027, \u00275363\u0027, \u00275185\u0027, \u00277850\u0027, \u00273484\u0027, \u0027496\u0027, \u00275722\u0027, \u00273485\u0027, \u00277895\u0027, \u00275712\u0027, \u00274240\u0027, \u00275119\u0027, \u00279971\u0027, \u00272763\u0027, \u00275845\u0027, \u00272724\u0027, \u00272764\u0027, \u00274139\u0027, \u00279974\u0027, \u00275849\u0027, \u00275789\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n11861 [\u0027311\u0027, \u00272724\u0027, \u00275849\u0027, \u00273572\u0027, \u00275363\u0027, \u00274254\u0027, \u00275533\u0027, \u00274241\u0027, \u00275712\u0027, \u00272764\u0027, \u00273320\u0027, \u00272763\u0027, \u00274439\u0027, \u00275722\u0027, \u00273485\u0027, \u00275789\u0027, \u00272749\u0027, \u00275781\u0027, \u00274240\u0027, \u00272761\u0027, \u00274019\u0027, \u00273484\u0027, \u00272762\u0027, \u0027430\u0027, \u00279974\u0027, \u00279971\u0027, \u00277850\u0027, \u00277895\u0027, \u00277907\u0027, \u00274414\u0027, \u00275185\u0027, \u00275119\u0027, \u00275121\u0027, \u0027496\u0027, \u00274139\u0027, \u00279982\u0027, \u0027570\u0027, \u00275845\u0027, \u0027412\u0027] [\u00277850\u0027, \u00275363\u0027, \u00274139\u0027, \u00275712\u0027, \u00277895\u0027, \u00277907\u0027, \u00273572\u0027, \u00279974\u0027, \u00273485\u0027, \u00275119\u0027, \u00275722\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00273320\u0027, \u00273484\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00275789\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n72847 [\u00274019\u0027, \u0027311\u0027, \u00272762\u0027, \u0027496\u0027, \u0027430\u0027, \u00273485\u0027, \u00275363\u0027, \u00275185\u0027, \u00273484\u0027, \u00273572\u0027, \u00275722\u0027, \u00275781\u0027, \u00275789\u0027, \u00277850\u0027, \u00275533\u0027, \u00272763\u0027, \u00279974\u0027, \u00277895\u0027, \u00273320\u0027, \u00274139\u0027, \u00279971\u0027, \u00272764\u0027, \u00274414\u0027, \u0027570\u0027, \u00275712\u0027, \u00275121\u0027, \u00279982\u0027, \u00274241\u0027, \u00275845\u0027, \u00277907\u0027, \u00274439\u0027, \u00274254\u0027, \u00272749\u0027, \u00275849\u0027, \u00272761\u0027, \u00274240\u0027, \u0027412\u0027, \u00275119\u0027, \u00272724\u0027] [\u00275533\u0027, \u00272761\u0027, \u00274019\u0027, \u0027570\u0027, \u00279982\u0027, \u00274241\u0027, \u00275121\u0027, \u00275185\u0027, \u00274254\u0027, \u0027311\u0027, \u00274414\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027, \u00275789\u0027, \u00275849\u0027, \u00277895\u0027, \u00274240\u0027, \u00274139\u0027, \u00275722\u0027, \u00273572\u0027, \u00273320\u0027, \u00272724\u0027, \u00272763\u0027, \u00272749\u0027, \u00272764\u0027, \u00277907\u0027, \u00274439\u0027, \u00273484\u0027, \u00275781\u0027, \u00273485\u0027, \u00275119\u0027, \u00275845\u0027, \u00279971\u0027, \u00275712\u0027, \u00279974\u0027, \u00277850\u0027, \u00275363\u0027, \u0027496\u0027]\n13599 [\u00275849\u0027, \u00274019\u0027, \u00272762\u0027, \u00275845\u0027, \u00275789\u0027, \u0027570\u0027, \u00279971\u0027, \u00275185\u0027, \u00274241\u0027, \u00274439\u0027, \u00275722\u0027, \u00273572\u0027, \u00272763\u0027, \u00277895\u0027, \u00275363\u0027, \u00273484\u0027, \u00275712\u0027, \u00272749\u0027, \u00274240\u0027, \u00273320\u0027, \u00277850\u0027, \u00274139\u0027, \u00272764\u0027, \u0027430\u0027, \u00274254\u0027, \u00275781\u0027, \u00273485\u0027, \u00277907\u0027, \u00274414\u0027, \u00275533\u0027, \u00272724\u0027, \u00275121\u0027, \u00279974\u0027, \u0027311\u0027, \u0027496\u0027, \u00279982\u0027, \u0027412\u0027, \u00272761\u0027, \u00275119\u0027] [\u00275363\u0027, \u00273572\u0027, \u00277907\u0027, \u00274240\u0027, \u00277895\u0027, \u00272763\u0027, \u00275845\u0027, \u00275722\u0027, \u00275185\u0027, \u00272764\u0027, \u00272724\u0027, \u00275533\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00272749\u0027, \u00273484\u0027, \u00275119\u0027, \u00279974\u0027, \u00275712\u0027, \u00273485\u0027, \u00279971\u0027, \u00277850\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00274241\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n27726 [\u0027496\u0027, \u00275119\u0027, \u00274241\u0027, \u00275845\u0027, \u00272749\u0027, \u00275185\u0027, \u00274439\u0027, \u00274254\u0027, \u00279971\u0027, \u00275712\u0027, \u00275121\u0027, \u00279974\u0027, \u00277907\u0027, \u0027412\u0027, \u00275849\u0027, \u0027570\u0027, \u00279982\u0027, \u00273485\u0027, \u00274414\u0027, \u00275781\u0027, \u00274240\u0027, \u00273484\u0027, \u00275722\u0027, \u00275533\u0027, \u00273572\u0027, \u00272764\u0027, \u00273320\u0027, \u00277850\u0027, \u00274139\u0027, \u00272763\u0027, \u00277895\u0027, \u00274019\u0027, \u0027430\u0027, \u00275363\u0027, \u0027311\u0027, \u00275789\u0027, \u00272724\u0027, \u00272761\u0027, \u00272762\u0027] [\u00277850\u0027, \u00275781\u0027, \u00274254\u0027, \u00275121\u0027, \u00275712\u0027, \u0027311\u0027, \u00277907\u0027, \u00273572\u0027, \u0027412\u0027, \u00274139\u0027, \u00274240\u0027, \u00275722\u0027, \u00277895\u0027, \u00275533\u0027, \u00272763\u0027, \u00275119\u0027, \u00272764\u0027, \u00273485\u0027, \u00272724\u0027, \u00275185\u0027, \u00275363\u0027, \u00272749\u0027, \u00279982\u0027, \u00273320\u0027, \u00279971\u0027, \u00275845\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00272762\u0027, \u0027430\u0027]\n45269 [\u0027496\u0027, \u00275849\u0027, \u00274439\u0027, \u0027412\u0027, \u00279971\u0027, \u00274241\u0027, \u00274254\u0027, \u00277907\u0027, \u00273572\u0027, \u00272762\u0027, \u00272763\u0027, \u00275789\u0027, \u00275185\u0027, \u00275712\u0027, \u00275533\u0027, \u00272749\u0027, \u00275781\u0027, \u00273320\u0027, \u00272764\u0027, \u00274414\u0027, \u00275121\u0027, \u00272761\u0027, \u00275119\u0027, \u00277895\u0027, \u00275722\u0027, \u00273485\u0027, \u00279974\u0027, \u00274019\u0027, \u00275363\u0027, \u0027570\u0027, \u00274240\u0027, \u00273484\u0027, \u00272724\u0027, \u00274139\u0027, \u00279982\u0027, \u0027430\u0027, \u00277850\u0027, \u0027311\u0027, \u00275845\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u0027430\u0027, \u00273572\u0027, \u00275789\u0027, \u00275722\u0027, \u00275533\u0027, \u00274139\u0027, \u00275119\u0027, \u00277895\u0027, \u00272749\u0027, \u00274240\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00275845\u0027, \u00273485\u0027, \u00272764\u0027, \u00279982\u0027, \u00273320\u0027, \u00279974\u0027, \u00273484\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u0027570\u0027, \u00274414\u0027, \u0027311\u0027, \u00274241\u0027, \u00272762\u0027, \u00274254\u0027, \u00275121\u0027, \u0027412\u0027]\n84465 [\u00272724\u0027, \u00274019\u0027, \u0027412\u0027, \u0027311\u0027, \u00274241\u0027, \u00272749\u0027, \u00273572\u0027, \u00274139\u0027, \u00279971\u0027, \u00274439\u0027, \u00275849\u0027, \u00272762\u0027, \u00275845\u0027, \u00273484\u0027, \u00279982\u0027, \u00275121\u0027, \u00277850\u0027, \u00275185\u0027, \u00274414\u0027, \u00275789\u0027, \u00275781\u0027, \u00273485\u0027, \u00275363\u0027, \u00272761\u0027, \u0027430\u0027, \u00275533\u0027, \u00279974\u0027, \u00273320\u0027, \u00272763\u0027, \u0027496\u0027, \u00272764\u0027, \u0027570\u0027, \u00277907\u0027, \u00277895\u0027, \u00274254\u0027, \u00274240\u0027, \u00275722\u0027, \u00275712\u0027, \u00275119\u0027] [\u0027570\u0027, \u00277850\u0027, \u00272762\u0027, \u00275363\u0027, \u00277907\u0027, \u00273572\u0027, \u00275722\u0027, \u00275533\u0027, \u00277895\u0027, \u00275119\u0027, \u00274240\u0027, \u00273485\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00275845\u0027, \u00272764\u0027, \u00275712\u0027, \u00272749\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u00274241\u0027, \u00274254\u0027, \u00275121\u0027, \u0027311\u0027, \u0027412\u0027, \u0027430\u0027]\n77349 [\u00274019\u0027, \u0027412\u0027, \u0027311\u0027, \u00274241\u0027, \u00272749\u0027, \u00274139\u0027, \u00272762\u0027, \u00274439\u0027, \u00279971\u0027, \u00275849\u0027, \u00273572\u0027, \u00272724\u0027, \u00275185\u0027, \u00273484\u0027, \u00273485\u0027, \u0027430\u0027, \u00275789\u0027, \u00277907\u0027, \u00277850\u0027, \u00275363\u0027, \u00275845\u0027, \u00275781\u0027, \u00279982\u0027, \u00273320\u0027, \u0027570\u0027, \u00272763\u0027, \u00279974\u0027, \u00275533\u0027, \u00274414\u0027, \u00275121\u0027, \u00272764\u0027, \u0027496\u0027, \u00277895\u0027, \u00275722\u0027, \u00274254\u0027, \u00272761\u0027, \u00275712\u0027, \u00275119\u0027, \u00274240\u0027] [\u00277850\u0027, \u00274254\u0027, \u00275363\u0027, \u0027311\u0027, \u00275712\u0027, \u00277907\u0027, \u00273572\u0027, \u00279982\u0027, \u00275533\u0027, \u00277895\u0027, \u00275722\u0027, \u00274240\u0027, \u00275119\u0027, \u00273485\u0027, \u00272763\u0027, \u00272724\u0027, \u00275185\u0027, \u00272764\u0027, \u0027496\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00275845\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n74346 [\u00275849\u0027, \u00274019\u0027, \u00275119\u0027, \u00274241\u0027, \u00272749\u0027, \u00275185\u0027, \u00274254\u0027, \u00277907\u0027, \u00274439\u0027, \u00275789\u0027, \u00273484\u0027, \u00275712\u0027, \u00275845\u0027, \u00279974\u0027, \u00275121\u0027, \u00272764\u0027, \u00273485\u0027, \u00279971\u0027, \u00279982\u0027, \u00275533\u0027, \u00277850\u0027, \u0027570\u0027, \u00274240\u0027, \u00275363\u0027, \u00273320\u0027, \u00277895\u0027, \u00275781\u0027, \u00274414\u0027, \u00275722\u0027, \u00273572\u0027, \u0027430\u0027, \u00274139\u0027, \u00272763\u0027, \u0027311\u0027, \u00272724\u0027, \u0027496\u0027, \u00272761\u0027, \u00272762\u0027, \u0027412\u0027] [\u00277850\u0027, \u00275363\u0027, \u00272761\u0027, \u00274240\u0027, \u00275722\u0027, \u00275533\u0027, \u00272724\u0027, \u00275119\u0027, \u00272749\u0027, \u00273485\u0027, \u00272764\u0027, \u00274414\u0027, \u00275185\u0027, \u00273320\u0027, \u00279982\u0027, \u0027412\u0027, \u00273484\u0027, \u00275789\u0027, \u00274139\u0027, \u00277895\u0027, \u00279974\u0027, \u00279971\u0027, \u00273572\u0027, \u00272763\u0027, \u00275849\u0027, \u00277907\u0027, \u0027496\u0027, \u00275712\u0027, \u00275845\u0027, \u00274019\u0027, \u00274439\u0027, \u00275781\u0027, \u0027570\u0027, \u00274241\u0027, \u00274254\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027430\u0027]\n24995 [\u0027412\u0027, \u0027311\u0027, \u00272762\u0027, \u00274241\u0027, \u00273572\u0027, \u00275849\u0027, \u00272749\u0027, \u00274439\u0027, \u00272724\u0027, \u00273320\u0027, \u00274139\u0027, \u00272763\u0027, \u00275845\u0027, \u00279971\u0027, \u00275363\u0027, \u00275781\u0027, \u00275533\u0027, \u00275185\u0027, \u0027496\u0027, \u00274254\u0027, \u00272764\u0027, \u00273485\u0027, \u00277850\u0027, \u0027430\u0027, \u00275789\u0027, \u00277907\u0027, \u00277895\u0027, \u00273484\u0027, \u00275712\u0027, \u00275722\u0027, \u00274414\u0027, \u00279974\u0027, \u00279982\u0027, \u0027570\u0027, \u00275121\u0027, \u00272761\u0027, \u00274019\u0027, \u00275119\u0027, \u00274240\u0027] [\u00275781\u0027, \u00274414\u0027, \u00275712\u0027, \u00273572\u0027, \u00277907\u0027, \u00275533\u0027, \u00277895\u0027, \u00274240\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00272763\u0027, \u00275363\u0027, \u00272724\u0027, \u00279974\u0027, \u00275845\u0027, \u00275185\u0027, \u00277850\u0027, \u00272764\u0027, \u00279982\u0027, \u0027496\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00272749\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00274439\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n406 [\u0027311\u0027, \u0027412\u0027, \u00272761\u0027, \u00275845\u0027, \u00273572\u0027, \u00272749\u0027, \u00275712\u0027, \u00272763\u0027, \u00274254\u0027, \u00274439\u0027, \u00277907\u0027, \u00275722\u0027, \u0027570\u0027, \u00273320\u0027, \u00275533\u0027, \u00272764\u0027, \u00275363\u0027, \u00274139\u0027, \u00275781\u0027, \u00274241\u0027, \u00275849\u0027, \u00279982\u0027, \u00273485\u0027, \u00275789\u0027, \u00274240\u0027, \u00274019\u0027, \u0027430\u0027, \u00272724\u0027, \u00277850\u0027, \u00279974\u0027, \u00277895\u0027, \u00274414\u0027, \u00273484\u0027, \u0027496\u0027, \u00275185\u0027, \u00275121\u0027, \u00279971\u0027, \u00275119\u0027, \u00272762\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00275722\u0027, \u00272763\u0027, \u00277895\u0027, \u00274240\u0027, \u00275533\u0027, \u00273572\u0027, \u00275119\u0027, \u00272724\u0027, \u00275185\u0027, \u00273485\u0027, \u00272764\u0027, \u00275845\u0027, \u00279982\u0027, \u00272749\u0027, \u00273320\u0027, \u00274139\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00275121\u0027, \u00274241\u0027, \u0027311\u0027, \u00272762\u0027, \u0027430\u0027, \u0027412\u0027]\n27800 None []\n8698 [\u00275119\u0027, \u0027412\u0027, \u00274241\u0027, \u00272762\u0027, \u00272724\u0027, \u00272749\u0027, \u00273572\u0027, \u0027496\u0027, \u00274439\u0027, \u00275185\u0027, \u00275849\u0027, \u00275845\u0027, \u00275781\u0027, \u00273320\u0027, \u00274139\u0027, \u00277850\u0027, \u00279974\u0027, \u00273485\u0027, \u00273484\u0027, \u00274019\u0027, \u00275121\u0027, \u00277895\u0027, \u00279982\u0027, \u00275789\u0027, \u00274414\u0027, \u00275533\u0027, \u00275363\u0027, \u0027311\u0027, \u0027430\u0027, \u00272764\u0027, \u0027570\u0027, \u00272763\u0027, \u00279971\u0027, \u00275722\u0027, \u00275712\u0027, \u00277907\u0027, \u00274254\u0027, \u00272761\u0027, \u00274240\u0027] [\u00274241\u0027, \u0027311\u0027, \u00275712\u0027, \u00273572\u0027, \u00277907\u0027, \u0027412\u0027, \u00277895\u0027, \u00279982\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00272763\u0027, \u00272724\u0027, \u00274240\u0027, \u00275533\u0027, \u00275185\u0027, \u00275845\u0027, \u00272764\u0027, \u00272749\u0027, \u00273484\u0027, \u00273320\u0027, \u00277850\u0027, \u00274139\u0027, \u00275363\u0027, \u00279971\u0027, \u00279974\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274254\u0027, \u00272762\u0027, \u0027430\u0027]\n18250 [\u00272724\u0027, \u00274019\u0027, \u00275849\u0027, \u0027496\u0027, \u00272762\u0027, \u00274241\u0027, \u00279971\u0027, \u00275845\u0027, \u0027570\u0027, \u00275185\u0027, \u00275789\u0027, \u00274439\u0027, \u00272749\u0027, \u00273572\u0027, \u00274139\u0027, \u00272763\u0027, \u00275722\u0027, \u00274240\u0027, \u00275121\u0027, \u00274414\u0027, \u00275781\u0027, \u00274254\u0027, \u00275712\u0027, \u00273484\u0027, \u00273485\u0027, \u00277895\u0027, \u0027311\u0027, \u00277850\u0027, \u00279974\u0027, \u00279982\u0027, \u00277907\u0027, \u00275363\u0027, \u00275533\u0027, \u0027430\u0027, \u00272764\u0027, \u00273320\u0027, \u00272761\u0027, \u0027412\u0027, \u00275119\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00273572\u0027, \u00274414\u0027, \u00277907\u0027, \u00275722\u0027, \u00275533\u0027, \u00277895\u0027, \u00274240\u0027, \u00273485\u0027, \u00272763\u0027, \u00275119\u0027, \u00272724\u0027, \u00272764\u0027, \u00275185\u0027, \u00272749\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275845\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00275781\u0027, \u00274439\u0027, \u0027570\u0027, \u00274241\u0027, \u00274254\u0027, \u00275121\u0027, \u00272762\u0027, \u0027311\u0027, \u0027412\u0027, \u0027430\u0027]\n58163 [\u00275849\u0027, \u00272762\u0027, \u00272761\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00277907\u0027, \u00273572\u0027, \u0027311\u0027, \u00272764\u0027, \u00272763\u0027, \u00275363\u0027, \u00274019\u0027, \u00275533\u0027, \u00275712\u0027, \u00273320\u0027, \u00274241\u0027, \u00275722\u0027, \u00277895\u0027, \u0027570\u0027, \u00275119\u0027, \u00275185\u0027, \u00273484\u0027, \u00275781\u0027, \u00272749\u0027, \u00279971\u0027, \u00277850\u0027, \u00273485\u0027, \u00274414\u0027, \u00272724\u0027, \u0027430\u0027, \u00279974\u0027, \u00275121\u0027, \u00279982\u0027, \u00274139\u0027, \u0027496\u0027, \u0027412\u0027, \u00274240\u0027, \u00275845\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00272749\u0027, \u00273572\u0027, \u00277907\u0027, \u00273484\u0027, \u00275722\u0027, \u00273485\u0027, \u00275119\u0027, \u00275533\u0027, \u00277895\u0027, \u00274240\u0027, \u00272763\u0027, \u00275845\u0027, \u00272724\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00274241\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n78641 [\u00272724\u0027, \u00274019\u0027, \u00274241\u0027, \u00272749\u0027, \u00279971\u0027, \u00274139\u0027, \u00273484\u0027, \u00275121\u0027, \u00279982\u0027, \u00275845\u0027, \u00272761\u0027, \u00277850\u0027, \u00274240\u0027, \u00274414\u0027, \u00275789\u0027, \u00273572\u0027, \u00273485\u0027, \u00275185\u0027, \u0027430\u0027, \u00274439\u0027, \u00275781\u0027, \u0027311\u0027, \u00279974\u0027, \u00275363\u0027, \u00275533\u0027, \u00275849\u0027, \u0027570\u0027, \u00272764\u0027, \u0027496\u0027, \u00277895\u0027, \u00277907\u0027, \u00272763\u0027, \u00273320\u0027, \u00275722\u0027, \u00274254\u0027, \u00272762\u0027, \u00275712\u0027, \u00275119\u0027, \u0027412\u0027] [\u00277850\u0027, \u00275722\u0027, \u00277907\u0027, \u00274439\u0027, \u0027570\u0027, \u00274019\u0027, \u00275121\u0027, \u0027311\u0027, \u00277895\u0027, \u00272762\u0027, \u00274241\u0027, \u00275119\u0027, \u00274254\u0027, \u00275185\u0027, \u0027412\u0027, \u00272763\u0027, \u00275789\u0027, \u00273572\u0027, \u00272749\u0027, \u00274139\u0027, \u00279982\u0027, \u00275849\u0027, \u00272724\u0027, \u00275533\u0027, \u0027430\u0027, \u00274240\u0027, \u00273320\u0027, \u00279971\u0027, \u00272764\u0027, \u00273484\u0027, \u0027496\u0027, \u00279974\u0027, \u00275712\u0027, \u00275845\u0027, \u00275363\u0027, \u00273485\u0027, \u00272761\u0027, \u00275781\u0027, \u00274414\u0027]\n30183 [\u00272762\u0027, \u00275845\u0027, \u0027570\u0027, \u00275185\u0027, \u00279971\u0027, \u00274241\u0027, \u00275789\u0027, \u00275722\u0027, \u00273572\u0027, \u00275849\u0027, \u00272763\u0027, \u00275712\u0027, \u00274240\u0027, \u00274439\u0027, \u00277895\u0027, \u00274139\u0027, \u00272749\u0027, \u00275781\u0027, \u00277850\u0027, \u0027430\u0027, \u00273320\u0027, \u00275363\u0027, \u00274414\u0027, \u00279974\u0027, \u00275121\u0027, \u00273484\u0027, \u00273485\u0027, \u00274019\u0027, \u0027311\u0027, \u00272724\u0027, \u0027496\u0027, \u00272764\u0027, \u00279982\u0027, \u00275533\u0027, \u0027412\u0027, \u00274254\u0027, \u00277907\u0027, \u00275119\u0027, \u00272761\u0027] [\u00274254\u0027, \u0027311\u0027, \u00275121\u0027, \u00272762\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00272763\u0027, \u00274240\u0027, \u00275533\u0027, \u00275849\u0027, \u00277907\u0027, \u00273572\u0027, \u00273485\u0027, \u00275722\u0027, \u00277895\u0027, \u00275119\u0027, \u00275845\u0027, \u00272724\u0027, \u00272764\u0027, \u00275185\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u0027412\u0027, \u0027430\u0027]\n20759 [\u00274019\u0027, \u00275849\u0027, \u00274240\u0027, \u00272762\u0027, \u00279971\u0027, \u00274439\u0027, \u00275789\u0027, \u0027496\u0027, \u00274254\u0027, \u00277907\u0027, \u00272749\u0027, \u00273484\u0027, \u00275185\u0027, \u00275363\u0027, \u00273572\u0027, \u0027412\u0027, \u00272724\u0027, \u00272764\u0027, \u00273485\u0027, \u00274139\u0027, \u00273320\u0027, \u00275119\u0027, \u00275533\u0027, \u00277895\u0027, \u00277850\u0027, \u00274241\u0027, \u00272763\u0027, \u0027430\u0027, \u00274414\u0027, \u00275121\u0027, \u00275781\u0027, \u00279974\u0027, \u00279982\u0027, \u0027570\u0027, \u00275722\u0027, \u0027311\u0027, \u00275712\u0027, \u00272761\u0027, \u00275845\u0027] [\u00277850\u0027, \u00275363\u0027, \u0027412\u0027, \u00275712\u0027, \u00277907\u0027, \u00273572\u0027, \u00275722\u0027, \u00275119\u0027, \u00275533\u0027, \u00277895\u0027, \u00274240\u0027, \u00272763\u0027, \u00273485\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00275781\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00274254\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027430\u0027]\n19059 [\u00275849\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00272762\u0027, \u00272761\u0027, \u00277907\u0027, \u00273572\u0027, \u00272764\u0027, \u00275533\u0027, \u00275363\u0027, \u00273320\u0027, \u00272763\u0027, \u00277895\u0027, \u00275119\u0027, \u00274241\u0027, \u00279971\u0027, \u00272749\u0027, \u00273484\u0027, \u00275712\u0027, \u00275722\u0027, \u00275781\u0027, \u00275185\u0027, \u00277850\u0027, \u00272724\u0027, \u00274414\u0027, \u00274019\u0027, \u00273485\u0027, \u0027311\u0027, \u00275121\u0027, \u00274240\u0027, \u0027430\u0027, \u00279974\u0027, \u0027496\u0027, \u0027570\u0027, \u00279982\u0027, \u00274139\u0027, \u0027412\u0027, \u00275845\u0027] [\u00274439\u0027, \u00274241\u0027, \u00275121\u0027, \u00274414\u0027, \u00275789\u0027, \u00279982\u0027, \u00277850\u0027, \u00272724\u0027, \u00275712\u0027, \u00277907\u0027, \u00275363\u0027, \u00273572\u0027, \u00273485\u0027, \u00277895\u0027, \u00275119\u0027, \u00274240\u0027, \u00275722\u0027, \u00275533\u0027, \u00272763\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00272749\u0027, \u00273320\u0027, \u00274139\u0027, \u00273484\u0027, \u00279974\u0027, \u0027496\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275781\u0027, \u0027570\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n22010 None []\n15175 None []\n8426 [\u00275849\u0027, \u00272724\u0027, \u00272762\u0027, \u00275845\u0027, \u00274241\u0027, \u00275789\u0027, \u0027570\u0027, \u00279971\u0027, \u00273572\u0027, \u00275185\u0027, \u00274439\u0027, \u00272749\u0027, \u00275722\u0027, \u00272763\u0027, \u00274240\u0027, \u00277895\u0027, \u00275712\u0027, \u00274254\u0027, \u00275363\u0027, \u00273320\u0027, \u00272764\u0027, \u00275781\u0027, \u00274414\u0027, \u00277850\u0027, \u00275533\u0027, \u00275121\u0027, \u00274019\u0027, \u00274139\u0027, \u0027311\u0027, \u00273484\u0027, \u00279974\u0027, \u0027430\u0027, \u00279982\u0027, \u0027496\u0027, \u00273485\u0027, \u00277907\u0027, \u0027412\u0027, \u00272761\u0027, \u00275119\u0027] [\u00277850\u0027, \u00275363\u0027, \u00279982\u0027, \u00275712\u0027, \u00272749\u0027, \u00277907\u0027, \u00273572\u0027, \u00273485\u0027, \u00277895\u0027, \u00275722\u0027, \u00275119\u0027, \u00275533\u0027, \u00274240\u0027, \u00272763\u0027, \u00275845\u0027, \u00272724\u0027, \u00275185\u0027, \u00272764\u0027, \u00273320\u0027, \u00274139\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00275789\u0027, \u00272761\u0027, \u00275781\u0027, \u00274019\u0027, \u00274414\u0027, \u00274439\u0027, \u0027570\u0027, \u00275121\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n21003 None []\n6828 None []\n2460 None []\n19371 [\u00274019\u0027, \u00274139\u0027, \u00273484\u0027, \u00279971\u0027, \u00275185\u0027, \u00273485\u0027, \u0027430\u0027, \u00275789\u0027, \u00277907\u0027, \u00277850\u0027, \u00279982\u0027, \u0027570\u0027, \u00274439\u0027, \u00275363\u0027, \u00272749\u0027, \u00275121\u0027, \u00279974\u0027, \u00274241\u0027, \u00275781\u0027, \u00274414\u0027, \u00275845\u0027, \u00272724\u0027, \u00275533\u0027, \u0027311\u0027, \u00272764\u0027, \u00272761\u0027, \u00277895\u0027, \u00275722\u0027, \u00275849\u0027, \u00273320\u0027, \u00274240\u0027, \u00272763\u0027, \u0027496\u0027, \u0027412\u0027, \u00275119\u0027, \u00272762\u0027, \u00275712\u0027, \u00274254\u0027, \u00273572\u0027] [\u00275781\u0027, \u0027570\u0027, \u00275121\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00273572\u0027, \u00275722\u0027, \u00274240\u0027, \u00275119\u0027, \u00275533\u0027, \u00277895\u0027, \u00272763\u0027, \u00273485\u0027, \u00272724\u0027, \u00275185\u0027, \u00275845\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00279974\u0027, \u00279971\u0027, \u0027496\u0027, \u00275849\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00274439\u0027, \u00274414\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n3100 None []\n73612 [\u00272724\u0027, \u0027496\u0027, \u00274019\u0027, \u00274241\u0027, \u00279971\u0027, \u00274439\u0027, \u00274139\u0027, \u00275121\u0027, \u00275185\u0027, \u00274414\u0027, \u00272749\u0027, \u00277907\u0027, \u00275781\u0027, \u00279982\u0027, \u00273485\u0027, \u00279974\u0027, \u00272761\u0027, \u00272763\u0027, \u00274254\u0027, \u0027570\u0027, \u00275712\u0027, \u00273572\u0027, \u00273484\u0027, \u0027430\u0027, \u00275533\u0027, \u00274240\u0027, \u00275722\u0027, \u00275845\u0027, \u00277850\u0027, \u0027311\u0027, \u00275849\u0027, \u00277895\u0027, \u00272764\u0027, \u00275789\u0027, \u00275363\u0027, \u00273320\u0027, \u00272762\u0027, \u00275119\u0027, \u0027412\u0027] [\u00277850\u0027, \u00275363\u0027, \u00275722\u0027, \u00272763\u0027, \u00274240\u0027, \u00277895\u0027, \u00274254\u0027, \u00275119\u0027, \u00275533\u0027, \u0027311\u0027, \u00279982\u0027, \u00272764\u0027, \u00272749\u0027, \u00274414\u0027, \u00272762\u0027, \u00275185\u0027, \u00274139\u0027, \u00275845\u0027, \u0027430\u0027, \u00275789\u0027, \u00279974\u0027, \u00273572\u0027, \u00273320\u0027, \u00275849\u0027, \u00272724\u0027, \u00277907\u0027, \u0027496\u0027, \u00279971\u0027, \u00273485\u0027, \u00273484\u0027, \u00272761\u0027, \u00274019\u0027, \u00274439\u0027, \u00275781\u0027, \u00275712\u0027, \u0027570\u0027, \u00275121\u0027, \u00274241\u0027, \u0027412\u0027]\n3977 [\u00275849\u0027, \u00275789\u0027, \u00274439\u0027, \u00274254\u0027, \u00272762\u0027, \u00272761\u0027, \u00277907\u0027, \u00273572\u0027, \u00272764\u0027, \u00275533\u0027, \u00275363\u0027, \u00273320\u0027, \u00272763\u0027, \u00277895\u0027, \u00275119\u0027, \u00274241\u0027, \u00279971\u0027, \u00272749\u0027, \u00273484\u0027, \u00275712\u0027, \u00275722\u0027, \u00275781\u0027, \u00275185\u0027, \u00277850\u0027, \u00272724\u0027, \u00274414\u0027, \u00274019\u0027, \u00273485\u0027, \u0027311\u0027, \u00275121\u0027, \u00274240\u0027, \u0027430\u0027, \u00279974\u0027, \u0027496\u0027, \u0027570\u0027, \u00279982\u0027, \u00274139\u0027, \u0027412\u0027, \u00275845\u0027] [\u00275781\u0027, \u00277850\u0027, \u00275363\u0027, \u00275712\u0027, \u00277907\u0027, \u00272749\u0027, \u00273572\u0027, \u00272724\u0027, \u00275722\u0027, \u00273485\u0027, \u00275533\u0027, \u00275119\u0027, \u0027496\u0027, \u00274240\u0027, \u00277895\u0027, \u00279974\u0027, \u00272763\u0027, \u00273484\u0027, \u00275185\u0027, \u00275845\u0027, \u00272764\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00279971\u0027, \u00275849\u0027, \u00272761\u0027, \u00274019\u0027, \u00275789\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274254\u0027, \u00274241\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n21220 [\u00275849\u0027, \u00272762\u0027, \u00275119\u0027, \u00275845\u0027, \u00274241\u0027, \u00275185\u0027, \u0027570\u0027, \u00272749\u0027, \u00275789\u0027, \u00279971\u0027, \u00275712\u0027, \u00274439\u0027, \u00274254\u0027, \u00275722\u0027, \u00273572\u0027, \u00279974\u0027, \u00275121\u0027, \u00274240\u0027, \u00277895\u0027, \u00273484\u0027, \u00272764\u0027, \u00272763\u0027, \u00273320\u0027, \u00277850\u0027, \u00277907\u0027, \u00275781\u0027, \u00274019\u0027, \u00275363\u0027, \u00273485\u0027, \u00275533\u0027, \u00279982\u0027, \u00274414\u0027, \u0027496\u0027, \u0027430\u0027, \u00274139\u0027, \u0027311\u0027, \u00272724\u0027, \u0027412\u0027, \u00272761\u0027] [\u00277850\u0027, \u00275363\u0027, \u00272761\u0027, \u00277907\u0027, \u00273572\u0027, \u0027311\u0027, \u00277895\u0027, \u00275533\u0027, \u00275722\u0027, \u00273485\u0027, \u00272763\u0027, \u0027430\u0027, \u00272724\u0027, \u00275119\u0027, \u00272764\u0027, \u00275845\u0027, \u00279982\u0027, \u00274240\u0027, \u00272749\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00275185\u0027, \u0027496\u0027, \u00279974\u0027, \u00279971\u0027, \u00275712\u0027, \u00275849\u0027, \u00275789\u0027, \u00275781\u0027, \u00274019\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00274241\u0027, \u00275121\u0027, \u00272762\u0027, \u00274254\u0027, \u0027412\u0027]\n2365 None []\n2512 [\u0027412\u0027, \u00272749\u0027, \u00274241\u0027, \u00273572\u0027, \u00274439\u0027, \u00274139\u0027, \u00279971\u0027, \u00273320\u0027, \u00274254\u0027, \u0027496\u0027, \u00277907\u0027, \u00275849\u0027, \u00272763\u0027, \u00274240\u0027, \u00275781\u0027, \u00272761\u0027, \u00279982\u0027, \u00274019\u0027, \u00277850\u0027, \u00274414\u0027, \u00275533\u0027, \u00275363\u0027, \u00272764\u0027, \u00275121\u0027, \u00273485\u0027, \u00275185\u0027, \u00273484\u0027, \u00272762\u0027, \u00277895\u0027, \u00279974\u0027, \u0027430\u0027, \u00275845\u0027, \u0027311\u0027, \u00275789\u0027, \u00272724\u0027, \u0027570\u0027, \u00275712\u0027, \u00275722\u0027, \u00275119\u0027] [\u00272762\u0027, \u00275363\u0027, \u00277850\u0027, \u00275712\u0027, \u00274240\u0027, \u00273572\u0027, \u00277907\u0027, \u00275533\u0027, \u00275722\u0027, \u00277895\u0027, \u00273485\u0027, \u00275119\u0027, \u00272763\u0027, \u00272724\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u0027496\u0027, \u00279982\u0027, \u00274139\u0027, \u00273320\u0027, \u00273484\u0027, \u00272749\u0027, \u00279974\u0027, \u00279971\u0027, \u00275849\u0027, \u00275789\u0027, \u00272761\u0027, \u00275781\u0027, \u00274019\u0027, \u00274439\u0027, \u00274414\u0027, \u0027570\u0027, \u00275121\u0027, \u00274241\u0027, \u00274254\u0027, \u0027311\u0027, \u0027412\u0027, \u0027430\u0027]\n30714 None []\n3866 None []\n92212 [\u00275849\u0027, \u00272762\u0027, \u00275845\u0027, \u00275789\u0027, \u0027570\u0027, \u00279971\u0027, \u00274241\u0027, \u00275185\u0027, \u00273572\u0027, \u00274439\u0027, \u00275722\u0027, \u00272763\u0027, \u00277895\u0027, \u00275712\u0027, \u00273320\u0027, \u00274254\u0027, \u00275363\u0027, \u00274240\u0027, \u00272764\u0027, \u00272749\u0027, \u00275781\u0027, \u00277850\u0027, \u00275533\u0027, \u00273484\u0027, \u00274414\u0027, \u0027430\u0027, \u00274019\u0027, \u00275121\u0027, \u00273485\u0027, \u00279974\u0027, \u00272724\u0027, \u00277907\u0027, \u00274139\u0027, \u0027311\u0027, \u0027496\u0027, \u00279982\u0027, \u0027412\u0027, \u00275119\u0027, \u00272761\u0027] [\u00275781\u0027, \u00275363\u0027, \u00275712\u0027, \u00275849\u0027, \u00273572\u0027, \u00272724\u0027, \u00275722\u0027, \u00277907\u0027, \u00277895\u0027, \u00273485\u0027, \u00275533\u0027, \u00275119\u0027, \u00272763\u0027, \u00274240\u0027, \u00277850\u0027, \u00279974\u0027, \u00275845\u0027, \u00275185\u0027, \u00272764\u0027, \u00279982\u0027, \u00272749\u0027, \u00273320\u0027, \u00274139\u0027, \u00273484\u0027, \u00279971\u0027, \u0027496\u0027, \u00272761\u0027, \u00275789\u0027, \u00274019\u0027, \u00274414\u0027, \u00274439\u0027, \u0027570\u0027, \u00274241\u0027, \u00274254\u0027, \u00275121\u0027, \u0027311\u0027, \u00272762\u0027, \u0027412\u0027, \u0027430\u0027]\n13536 None []\n      item  rank   user\n0      570     1   7666\n1     4414     2   7666\n2     7850     3   7666\n3     5363     4   7666\n4     3572     5   7666\n5     5712     6   7666\n6      430     7   7666\n7     7907     8   7666\n8     5533     9   7666\n9     2764    10   7666\n10    3485    11   7666\n11    5722    12   7666\n12    5119    13   7666\n13    7895    14   7666\n14    4240    15   7666\n15    2763    16   7666\n16    2724    17   7666\n17    5185    18   7666\n18    5845    19   7666\n19    9982    20   7666\n20    2749    21   7666\n21    4139    22   7666\n22    3320    23   7666\n23    3484    24   7666\n24    9974    25   7666\n25     496    26   7666\n26    9971    27   7666\n27    5849    28   7666\n28    2761    29   7666\n29    4019    30   7666\n...    ...   ...    ...\n1608  3485    10  92212\n1609  5533    11  92212\n1610  5119    12  92212\n1611  2763    13  92212\n1612  4240    14  92212\n1613  7850    15  92212\n1614  9974    16  92212\n1615  5845    17  92212\n1616  5185    18  92212\n1617  2764    19  92212\n1618  9982    20  92212\n1619  2749    21  92212\n1620  3320    22  92212\n1621  4139    23  92212\n1622  3484    24  92212\n1623  9971    25  92212\n1624   496    26  92212\n1625  2761    27  92212\n1626  5789    28  92212\n1627  4019    29  92212\n1628  4414    30  92212\n1629  4439    31  92212\n1630   570    32  92212\n1631  4241    33  92212\n1632  4254    34  92212\n1633  5121    35  92212\n1634   311    36  92212\n1635  2762    37  92212\n1636   412    38  92212\n1637   430    39  92212\n\n[1638 rows x 3 columns]\nWords: 2 ALS: 40 Word2Vec 40\nPrecision: 7.33 % Recall: 14.72 Ndcg: 0.3538413225186039  -  120 / 1518 / 695 0.3538413225186039\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1539440946489_-1403769835",
+      "id": "20181013-112906_321703291",
+      "dateCreated": "Oct 13, 2018 11:29:06 AM",
+      "dateStarted": "Oct 16, 2018 9:28:46 AM",
+      "dateFinished": "Oct 16, 2018 10:24:26 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Compara palavra por palavra e retorna as 5 doenças mais similares\r\n\r\ndef list_most_similar(words_text, paciente, num_w2v):\r\n\r\n    for exp in regular_expressions:\r\n        words_text \u003d re.sub(exp, \u0027 \u0027, words_text)\r\n\r\n    lista \u003d []\r\n    most_similar \u003d []\r\n    d \u003d dictionary\r\n    recomendações \u003d dic_recommend.get(paciente)\r\n    \r\n    if recomendações is not None:\r\n        for k, v in d.items():\r\n            #print(k, v)\r\n            if k in recomendações:\r\n                try:\r\n                    value \u003d match_words(words_text, v)\r\n                    #print(k, \u0027value\u0027, value)\r\n                    tupla \u003d (k, value)\r\n                    lista.append(tupla)\r\n                    #print(\u0027lista\u0027, lista)\r\n                except:\r\n                    erro \u003d 1\r\n        \r\n        if(len(lista) \u003e 0):\r\n            lista \u003d sorted(lista, key\u003dlambda x: x[1], reverse\u003dTrue)\r\n            for i in range (0, num_w2v):\r\n                if(len(lista) \u003e i):\r\n                    most_similar.append(lista[i][0])\r\n                    \r\n    print(paciente, recomendações, most_similar)\r\n    \r\n    return most_similar",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:45 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539684467434_2142705556",
+      "id": "20181016-070747_430980153",
+      "dateCreated": "Oct 16, 2018 7:07:47 AM",
+      "dateStarted": "Oct 16, 2018 8:55:45 AM",
+      "dateFinished": "Oct 16, 2018 8:55:45 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Retorna as n palavras com embedding mais proximo\n\ndef match_words(words_text, embedding_disease):\n    try:\n        embedding_text \u003d vec\u003dd2v_model.infer_vector(words_text,alpha\u003dstart_alpha, steps\u003dinfer_epoch)\n        #print(len(embedding_text),len(embedding_disease))\n        result \u003d 1 - spatial.distance.cosine(embedding_text, embedding_disease)\n        #print(result)\n        \n    except:\n        print(\u0027erro\u0027)\n        \n    return result",
+      "user": "anonymous",
+      "dateUpdated": "Oct 16, 2018 8:55:48 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1539684583768_-201399282",
+      "id": "20181016-070943_1190556405",
+      "dateCreated": "Oct 16, 2018 7:09:43 AM",
+      "dateStarted": "Oct 16, 2018 8:55:49 AM",
+      "dateFinished": "Oct 16, 2018 8:55:49 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539688986749_2038289698",
+      "id": "20181016-082306_2069193064",
+      "dateCreated": "Oct 16, 2018 8:23:06 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "08. Doc2Vec",
+  "id": "2DSW6J2HG",
+  "angularObjects": {
+    "2DFFMJW2D:shared_process": [],
+    "2DE4C8UXA:shared_process": [],
+    "2DFNF7F86:shared_process": [],
+    "2DDMFQ4NT:shared_process": [],
+    "2DF4JHTJS:shared_process": [],
+    "2DGTDKVBY:shared_process": [],
+    "2DDX1FHE4:shared_process": [],
+    "2DGBVAR63:shared_process": [],
+    "2DE1HTE4B:shared_process": [],
+    "2DFUMJA2M:shared_process": [],
+    "2DF3EN9Y8:shared_process": [],
+    "2DFG8QFKG:shared_process": [],
+    "2DE19T4UN:shared_process": [],
+    "2DDZ2CZF6:shared_process": [],
+    "2DGYH4B9E:shared_process": [],
+    "2DEG6W7VR:shared_process": [],
+    "2DFPD3S3G:shared_process": [],
+    "2DHACHYJ3:shared_process": [],
+    "2DDRJAE6Z:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}

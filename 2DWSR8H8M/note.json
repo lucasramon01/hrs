@@ -1,0 +1,384 @@
+{
+  "paragraphs": [
+    {
+      "text": "import pandas as pd\nimport numpy as np\nimport matplotlib\nimport matplotlib.pyplot as plt\nimport alpenglow as ag\nfrom alpenglow.offline.models import FactorModel\nfrom alpenglow.offline.evaluation import NdcgScore\nfrom alpenglow.offline.evaluation import PrecisionScore\nfrom alpenglow.offline.evaluation import RecallScore",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 3:48:24 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578051326_602214889",
+      "id": "20181026-152051_1630755581",
+      "dateCreated": "Oct 26, 2018 3:20:51 PM",
+      "dateStarted": "Oct 26, 2018 3:48:24 PM",
+      "dateFinished": "Oct 26, 2018 3:48:24 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "spark_topks \u003d pd.read_csv(\u0027recsys-2017-tutorial/spark_topks_mimic.csv\u0027)\nalpenglow_topks \u003d pd.read_csv(\u0027recsys-2017-tutorial/alpenglow_topks_mimic.csv\u0027)\n\ntrain_batch \u003d pd.read_csv(\u0027train_batch.csv\u0027, header\u003dNone, names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027])\ntest_batch \u003d pd.read_csv(\u0027test_batch.csv\u0027, header\u003dNone, names\u003d[\u0027time\u0027,\u0027user\u0027,\u0027item\u0027])\n\ntest_relevant \u003d test_batch[test_batch.user.isin(train_batch.user)]\ntest_relevant[\u0027score\u0027]\u003d1",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:29 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540577966222_516461856",
+      "id": "20181026-151926_1884216725",
+      "dateCreated": "Oct 26, 2018 3:19:26 PM",
+      "dateStarted": "Oct 26, 2018 5:19:29 PM",
+      "dateFinished": "Oct 26, 2018 5:19:29 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "scores \u003d [NdcgScore(test_relevant, topks, 5) for topks in [alpenglow_topks, spark_topks]]\nprecisao \u003d [PrecisionScore(test_relevant, topks, 5) for topks in [alpenglow_topks, spark_topks]]\nrecall \u003d [RecallScore(test_relevant, topks, 5) for topks in [alpenglow_topks, spark_topks]]\nx\u003d[1,2]\nplt.bar(x, scores)\nplt.title(\u0027Experiment scores\u0027)\nplt.ylabel(\u0027Average NDCG\u0027)\nplt.xticks(x, [\u0027Alpenglow\u0027,\u0027Spark\u0027])\nplt.show()\nprint(precisao, recall, scores )\n\nprint(scores)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:20:03 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv style\u003d\u0027width:auto;height:auto\u0027\u003e\u003cimg src\u003ddata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDIuMi4yLCBodHRwOi8vbWF0cGxvdGxpYi5vcmcvhp/UCwAAIABJREFUeJzt3XtUVXX+//EXgnhNBSUbPAhDIAqjYh68jOItE6NEnVFjzMuMJVb4HdM1X219G6mvU4Y5X5sM1yrMiZmvCpWNgjrSeB3zFh7TTJkUCwxOjmIXL3hBj/v3R6vz+zLgrfnoOR6ej7Vcsff+7HPe4CKfa5/Nwc+yLEsAAAAwpoGnBwAAAPA1BBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBYAAIBhBBaA2+6DDz5QTEyMp8cAgFuGwALqkYiICDVp0kTNmzd3/5k6deptnyMxMVGHDh267c9bVlYmPz8/Xb58+bY/N4D6JcDTAwC4vVavXq3Bgwd77PkvX76sgID6+7+e+v75A/UFV7AASJKefPJJjRo1yr09a9Ys3X///bIsS1u2bJHNZtPcuXPVpk0bRUREaNmyZe61Fy9e1G9+8xu1b99ebdu21RNPPKHz589LkvvcefPm6Z577tGvfvUr977vRUREaP78+erSpYuaNWumxx57TMePH9eDDz6ou+66S4MHD9Y333zjXr9r1y799Kc/VatWrdS1a1dt2bLFfWzAgAGaPXu2+vTpo7vuuktDhgzRyZMnJUn9+vWTJLVq1UrNmzfXzp07a30dioqKZLfb1aJFC7Vt21YzZsxwH9u2bZv7ecPCwpSTkyNJOnXqlCZMmKCQkBCFh4frhRde0JUrVyRJOTk56tOnj6ZPn67g4GA9//zzkqQ//vGP6tSpk4KCgpSUlKSjR49KkizL0vTp03X33XerZcuW6tKliw4cOHDTf58APMwCUG+Eh4db69evr/NYVVWVFR0dbb311lvW1q1brdatW1vl5eWWZVnW5s2bLX9/f2v69OnWhQsXrC1btlhNmza1Pv30U8uyLGvatGnWsGHDrK+++so6ffq09fDDD1vPPPNMjXNnzpxpXbhwwTp37py1efNmq127djXm6tmzp/XPf/7TqqiosEJCQqxu3bpZH330kXXhwgVr4MCB1vPPP29ZlmVVVFRYwcHB1tq1ay2Xy2X97W9/s4KDg60TJ05YlmVZ/fv3tyIjI61Dhw5Z586ds/r372/NmjXLsizLKi0ttSRZly5duurXqFevXtaf//xny7Is68yZM9bOnTsty7Kso0ePWs2bN7eWL19uVVdXWydPnrT27t1rWZZljR8/3kpJSbFOnz5tlZaWWtHR0dabb75pWZZlvfXWW5a/v7+1cOFC69KlS9a5c+eslStXWvfee69VXFxsXbp0yfrd735n9e7d27IsyyosLLTuu+8+65tvvrGuXLliFRcXW19++eXN/lUD8DACC6hHwsPDrWbNmlktW7Z0/8nOznYf//DDD62goCCrffv21vLly937v4+ks2fPuveNHj3amjNnjnXlyhWradOm1pEjR9zHduzYYUVERLjPbdiwoXX+/Pkaj/evgbV06VL39s9+9jPriSeecG8vXLjQGj58uGVZlpWZmWmNGzeuxuc1ZMgQKycnx7Ks7wLrd7/7nfvYokWLrKSkJMuybiywEhMTrYyMDKuysrLG/rlz51ojRoyotf7y5ctWYGCgdfDgQfe+119/3erfv79lWd8FVlhYWI1zhg4d6g4wy7Isl8tlNWnSxCorK7M2btxoRUdHWzt37rRcLtdV5wTg3XiJEKhnVq1apW+//db9Z/Lkye5jPXr0UGRkpCzL0pgxY2qcFxQUpGbNmrm3w8PD9eWXX6qyslLnzp1T9+7d1apVK7Vq1UpDhw5VZWWle21ISIgaN258zbnatm3r/rhJkya1ts+ePStJOnr0qN599133c7Vq1Urbtm3TsWPH3Ovvuece98dNmzZ1n3sjlixZosOHD6tjx45KSEjQmjVrJEnl5eW69957a60/efKkqqurFR4e7t4XHh4up9Pp3g4LC6txztGjRzVt2jT3/MHBwbIsS06nU4MGDdLUqVOVnp6utm3bKi0tTadPn77h+QF4BwILgNuiRYt08eJFhYaG6uWXX65x7JtvvlFVVZV7+4svvlBoaKjatGmjJk2a6ODBg+5oO3XqVI2o8fPzMzZjWFiYxo8fXyMSq6qq9Mwzz1z33BuZIzo6Wrm5uTpx4oRmzZqlUaNGqaqqSmFhYfrss89qrW/Tpo0aNmzovodK+u5r065du6s+b1hYmN54440an8P58+f105/+VJL061//Wnv27NHBgwd1+PBhzZ8//7pzA/AuBBYASdLhw4f129/+VkuXLtX//u//6uWXX9a+fftqrHnuuedUXV2tDz74QGvWrNHo0aPVoEEDTZ48WdOnT9eJEyckSU6nU++///4tmXPcuHFavXq13n//fblcLl24cEFbtmxRRUXFdc8NCQlRgwYN9Pnnn191zdKlS1VZWakGDRqoVatWkiR/f389+uij2rBhg9555x1dvnxZX331lfbt2yd/f3+NGTNGzz77rM6cOaOjR49qwYIFGjdu3FWf44knntBLL72kgwcPSvruJvl3331XkrR79259+OGHunTpkpo1a6bGjRvL39//Zr5EALwAgQXUM8OGDavxPlgjR47U5cuXNW7cOM2aNUtdu3ZVdHS05s6dq/Hjx+vixYuSvnvZLSgoSKGhoXr00Uf1+uuvq2PHjpKkefPmKSoqSr169VKLFi00ePDgW/Y+V2FhYcrPz9fcuXMVEhKisLAwzZ8/3/1Te9fStGlTPfvss+rTp49atWqlXbt21VpTWFiouLg4NW/eXNOmTVNeXp4aN26s9u3b669//av+53/+R8HBwYqPj9fHH38sSXrttdfUrFkzRUZGqm/fvho7dqwmTZp01TlGjhypWbNmKTU1VS1atNBPfvITrVu3TpJ0+vRpTZ48WUFBQQoPD1fr1q31m9/85gd+tQB4ip9lWZanhwDg3bZs2aJx48bd0FUiAABXsAAAAIwjsAAAAAzjJUIAAADDuIIFAABgGIEFAABgGL/S/SZ8/0tuAQDAzSkrK3P/4vX6gMC6CREREXI4HJ4eAwCAO47dbvf0CLcVLxECAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYRmABAAAYFuDpAQDgThDxzFpPjwDcNmWZD3l6hDseV7AAAAAM89nAKiwsVExMjKKiopSZmVnr+PTp0xUfH6/4+Hh16NBBrVq18sCUAADAF/nkS4Qul0vp6elav369bDabEhISlJKSotjYWPeaV155xf3xa6+9pr1793piVAAA4IN88gpWUVGRoqKiFBkZqcDAQKWmpio/P/+q63Nzc/WLX/ziNk4IAAB8mU8GltPpVFhYmHvbZrPJ6XTWufbo0aMqLS3VoEGDbtd4AADAx/nkS4SWZdXa5+fnV+favLw8jRo1Sv7+/nUez87OVnZ2tiSpsrLS3JAAAMBn+eQVLJvNpvLycvd2RUWFQkND61ybl5d3zZcH09LS5HA45HA4FBISYnxWAADge3wysBISElRSUqLS0lJVV1crLy9PKSkptdYdOnRI33zzjXr37u2BKQEAgK/yycAKCAhQVlaWkpKS1KlTJ40ZM0ZxcXHKyMhQQUGBe11ubq5SU1Ov+vIhAADAD+Fn1XXDEupkt9vlcDg8PQYAD+Cd3FGf3Ip3cq9v/4b65BUsAAAATyKwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADCOwAAAADPPZwCosLFRMTIyioqKUmZlZ55p33nlHsbGxiouL09ixY2/zhAAAwFcFeHqAW8Hlcik9PV3r16+XzWZTQkKCUlJSFBsb615TUlKil156Sdu3b1dQUJBOnDjhwYkBAIAv8ckrWEVFRYqKilJkZKQCAwOVmpqq/Pz8GmsWL16s9PR0BQUFSZLuvvtuT4wKAAB8kE8GltPpVFhYmHvbZrPJ6XTWWHP48GEdPnxYffr0Ua9evVRYWHi7xwQAAD7KJ18itCyr1j4/P78a25cvX1ZJSYm2bNmiiooKJSYm6sCBA2rVqlWNddnZ2crOzpYkVVZW3rqhAQCAz/DJK1g2m03l5eXu7YqKCoWGhtZaM3z4cDVs2FA//vGPFRMTo5KSklqPlZaWJofDIYfDoZCQkFs+OwAAuPP5ZGAlJCSopKREpaWlqq6uVl5enlJSUmqsGTFihDZv3ixJOnnypA4fPqzIyEhPjAsAAHyMTwZWQECAsrKylJSUpE6dOmnMmDGKi4tTRkaGCgoKJElJSUlq3bq1YmNjNXDgQM2fP1+tW7f28OQAAMAX+Fl13bCEOtntdjkcDk+PAcADIp5Z6+kRgNumLPMh449Z3/4N9ckrWAAAAJ5EYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABhGYAEAABjms4FVWFiomJgYRUVFKTMzs9bxnJwchYSEKD4+XvHx8XrzzTc9MCUAAPBFAZ4e4FZwuVxKT0/X+vXrZbPZlJCQoJSUFMXGxtZY98gjjygrK8tDUwIAAF/lk1ewioqKFBUVpcjISAUGBio1NVX5+fmeHgsAANQTPhlYTqdTYWFh7m2bzSan01lr3XvvvacuXbpo1KhRKi8vv50jAgAAH+aTgWVZVq19fn5+NbaHDRumsrIy7d+/X4MHD9bEiRPrfKzs7GzZ7XbZ7XZVVlbeknkBAIBv8cnAstlsNa5IVVRUKDQ0tMaa1q1bq1GjRpKkyZMna8+ePXU+VlpamhwOhxwOh0JCQm7d0AAAwGf4ZGAlJCSopKREpaWlqq6uVl5enlJSUmqsOXbsmPvjgoICderU6XaPCQAAfJRP/hRhQECAsrKylJSUJJfLpUmTJikuLk4ZGRmy2+1KSUnRwoULVVBQoICAAAUHBysnJ8fTYwMAAB/hZ9V1wxLqZLfb5XA4PD0GAA+IeGatp0cAbpuyzIeMP2Z9+zfUJ18iBAAA8CQCCwAAwDACCwAAwDACCwAAwDACCwAAwDACCwAAwDACCwAAwDACCwAAwDACCwAAwDACCwAAwDCvDKxt27bpz3/+s3t71KhRGjRokAYNGqRNmzZ5cDIAAIDr88pf9vzcc8/ptddec28fOnRIOTk5qqqq0ty5czVo0CAPTgcAAHBtXnkF6/Tp04qNjXVvR0dHq3v37urXr5/OnDnjwckAAACuzysD69tvv62x/Ze//MX98fHjx2/3OAAAADfFKwOrY8eOWrt2ba39a9asUUxMjAcmAgAAuHFeeQ/WggUL9PDDD2vFihW67777JEl79uzRjh07tGbNGg9PBwAAcG1eeQUrOjpa+/fvV2JiosrKylRWVqZ+/fpp//796tChg6fHAwAAuCavvIJ15MgRHT9+XJMmTaqx/4MPPlBoaKjuvfdeD00GAABwfV55Bevpp5/WXXfdVWt/kyZN9PTTT3tgIgAAgBvnlYFVVlamLl261Npvt9tVVlZ2+wcCAAC4CV4ZWBcuXLjqsfPnz9/GSQAAAG6eVwZWQkKCFi9eXGv/kiVL1L17dw9MBAAAcOO88ib3P/zhDxo5cqSWLVvmDiqHw6Hq6mqtXLnSw9MBAABcm1cGVtu2bbVjxw5t3rxZBw4ckCQ99NBD/A5CAABwR/DKwPpemzZtdM8990iS7r77bg9PAwAAcGO8MrBOnTql4cOHq7y8XF26dJFlWfrkk0/Uvn175efnq0WLFp4eEQAA4Kq88ib32bNny263q6SkRCtXrtSqVatUUlKihIQEPfvss54eDwAA4Jq88grWhg0btH//fjVo8P/7r0GDBpo7d646d+7swckAAACuzyuvYAUGBiogoHb7BQQEqFGjRh6YCAAA4MZ55RWsCxcuaO/evbIsq8Z+y7J08eJFD00FAABwY7wysO655x7NmDHjqscAAAC8mVcG1pYtWzw9AgAAwA/mlYG1devWax7v16/fdR+jsLBQ06ZNk8vl0uOPP65nnnmmznUrVqzQ6NGjtXv3btnt9h80LwAAwP/llYE1f/78Wvv8/Pz08ccfq6KiQi6X65rnu1wupaena/369bLZbEpISFBKSopiY2NrrDtz5owWLlyonj17Gp0fAADUb175U4SrV6+u8WfWrFm6dOmSfvSjH2nVqlXXPb+oqEhRUVGKjIxUYGCgUlNTlZ+fX2vd7NmzNXPmTDVu3PhWfBoAAKCe8srA+t7GjRs1YMAAzZ49WzNmzNCuXbs0bNiw657ndDoVFhbm3rbZbHI6nTXW7N27V+Xl5Xr44YeNzw0AAOo3r3yJcO3atXrxxRfVsmVLvfjii+rTp89Nnf+vb+8gffcS4/euXLmi6dOnKycn57qPlZ2drezsbElSZWXlTc0BAADqJ68MrGHDhslms6l169aaN29ereMFBQXXPN9ms6m8vNy9XVFRodDQUPf2mTNndODAAQ0YMECS9M9//lMpKSkqKCiodaN7Wlqa0tLSJImb4AEAwA3xysDavHnzv3V+QkKCSkpKVFpaqnbt2ikvL0/Lly93H2/ZsqVOnjzp3h4wYIB+//vfE1AAAMAIrwys/v37/1vnBwQEKCsrS0lJSXK5XJo0aZLi4uKUkZEhu92ulJQUQ5MCAADU5pWBZUJycrKSk5Nr7JszZ06da3ljUwAAYJJX/xQhAADAneiOCKyqqipPjwAAAHDDvDqwduzYodjYWHXq1EmS9PHHH+upp57y8FQAAADX5tWBNX36dL3//vtq3bq1JKlr167X/T2FAAAAnubVgSWpxjuyS5K/v7+HJgEAALgxXv1ThGFhYdqxY4f8/PxUXV2thQsXul8uBAAA8FZefQXr9ddf16JFi+R0OmWz2bRv3z4tWrTI02MBAABck1dfwWrTpo2WLVvm6TEAAABuilcH1q9//eta+1q2bCm73a7hw4d7YCIAAIDr8+qXCC9cuKB9+/YpOjpa0dHR2r9/v77++mstWbJETz/9tKfHAwAAqJNXX8E6cuSINm3apICA78Z88sknNWTIEK1fv16dO3f28HQAAAB18+orWE6ns8a7uFdVVenLL7+Uv7+/GjVq5MHJAAAArs6rr2DNnDlT8fHxGjBggCzL0tatW/Vf//Vfqqqq0uDBgz09HgAAQJ28OrAee+wxJScnq6ioSJZlae7cuQoNDZUkzZ8/38PTAQAA1M2rXyKUpMaNG+tHP/qRgoODdeTIEX5VDgAA8HpefQXrzTff1KuvvqqKigrFx8dr165d6t27tzZt2uTp0QAAAK7Kq69gvfrqq9q9e7fCw8O1efNm7d27VyEhIZ4eCwAA4Jq8OrAaN26sxo0bS5IuXryojh076tChQx6eCgAA4Nq8+iVCm82mb7/9ViNGjNADDzygoKAg903uAAAA3sqrA2vlypWSpOeff14DBw7UqVOnNHToUA9PBQAAcG1eG1hXrlxRly5ddODAAUlS//79PTwRAADAjfHae7AaNGigrl276osvvvD0KAAAADfFa69gSdKxY8cUFxenHj16qFmzZu79BQUFHpwKAADg2rw6sJ577jlPjwAAAHDTvDqw+vfvr6NHj6qkpESDBw/WuXPn5HK5PD0WAADANXntPViStHjxYo0aNUpTpkyRJDmdTo0YMcLDUwEAAFybVwfWokWLtH37drVo0UKSFB0drRMnTnh4KgAAgGvz6sBq1KiRAgMD3duXL1+Wn5+fBycCAAC4Pq8OrP79+2vu3Lk6f/681q9fr9GjR2vYsGGeHgsAAOCavDqwMjMzFRISos6dO+uNN95QcnKyXnjhBU+PBQAAcE1e/VOE+fn5mjBhgiZPnuzpUQAAAG6YV1/BKigoUIcOHTR+/HitXbtWly9f9vRIAAAA1+XVgfXWW2/pyJEjGj16tJYvX657771Xjz/++A2dW1hYqJiYGEVFRSkzM7PW8ddff12dO3dWfHy8+vbtq+LiYtPjAwCAesqrA0uSGjZsqAcffFCpqanq3r278vPzr3uOy+VSenq61q1bp+LiYuXm5tYKqLFjx+qTTz7Rvn37NHPmTM2YMeNWfQoAAKCe8erAKiws1C9/+UtFRUVpxYoVevzxx3Xs2LHrnldUVKSoqChFRkYqMDBQqamptcLs+/fWkqSqqire/gEAABjj1Te55+TkKDU1VW+88YYaNWp0w+c5nU6FhYW5t202mz788MNa6xYtWqQFCxaourpamzZtMjIzAACAV1/BysvL04gRI9xxtX37dqWnp1/3PMuyau2r6wpVenq6PvvsM82bN++qb/+QnZ0tu90uu92uysrKm/wMAABAfeTVgSXJfY9URESEfvvb36pjx47XPcdms6m8vNy9XVFRodDQ0KuuT01N1apVq+o8lpaWJofDIYfDoZCQkJv/BAAAQL3jlS8RHj58WHl5ecrNzVXr1q31yCOPyLIsbd68+YbOT0hIUElJiUpLS9WuXTvl5eVp+fLlNdaUlJQoOjpakrR27Vr3xwAAAP8urwysjh07KjExUatXr1ZUVJQk6ZVXXrnh8wMCApSVlaWkpCS5XC5NmjRJcXFxysjIkN1uV0pKirKysrRhwwY1bNhQQUFB+tOf/nSrPh0AAFDPeGVgvffee8rLy9PAgQM1dOhQpaam1nlf1bUkJycrOTm5xr45c+a4P3711VeNzAoAAPCvvPIerJEjR+rtt9/Wp59+qgEDBuiVV17R8ePH9eSTT+pvf/ubp8cDAAC4Jq8MrO81a9ZMjz76qNasWaOKigrFx8fX+a7sAAAA3sSrA+v/Cg4O1pQpU3i/KgAA4PXumMACAAC4UxBYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhhFYAAAAhvlsYBUWFiomJkZRUVHKzMysdXzBggWKjY1Vly5ddP/99+vo0aMemBIAAPginwwsl8ul9PR0rVu3TsXFxcrNzVVxcXGNNd26dZPD4dD+/fs1atQozZw500PTAgAAX+OTgVVUVKSoqChFRkYqMDBQqampys/Pr7Fm4MCBatq0qSSpV69eqqio8MSoAADAB/lkYDmdToWFhbm3bTabnE7nVdcvWbJEDz744O0YDQAA1AMBnh7gVrAsq9Y+Pz+/OtcuXbpUDodDf//73+s8np2drezsbElSZWWluSEBAIDP8skrWDabTeXl5e7tiooKhYaG1lq3YcMGvfjiiyooKFCjRo3qfKy0tDQ5HA45HA6FhITcspkBAIDv8MnASkhIUElJiUpLS1VdXa28vDylpKTUWLN3715NmTJFBQUFuvvuuz00KQAA8EU+GVgBAQHKyspSUlKSOnXqpDFjxiguLk4ZGRkqKCiQJP3nf/6nzp49q9GjRys+Pr5WgAEAAPxQPnkPliQlJycrOTm5xr45c+a4P96wYcPtHgkAANQTPnkFCwAAwJMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMILAAAAMMCPD1AfRfxzFpPjwDcNmWZD3l6BAC4LbiCBQAAYBiBBQAAYBiBBQAAYBiBBQAAYBiBBQAAYBiBBQAAYBiBBQAAYBiBBQAAYBiBBQAAYJjPBlZhYaFiYmIUFRWlzMzMWse3bt2q++67TwEBAVqxYoUHJgQAAL7KJwPL5XIpPT1d69atU3FxsXJzc1VcXFxjTfv27ZWTk6OxY8d6aEoAAOCrfPJ3ERYVFSkqKkqRkZGSpNTUVOXn5ys2Nta9JiIiQpLUoIFPNiYAAPAgn6wLp9OpsLAw97bNZpPT6fTgRAAAoD7xyStYlmXV2ufn5/eDHis7O1vZ2dmSpMrKyn9rLgAAUD/45BUsm82m8vJy93ZFRYVCQ0N/0GOlpaXJ4XDI4XAoJCTE1IgAAMCH+WRgJSQkqKSkRKWlpaqurlZeXp5SUlI8PRYAAKgnfDKwAgIClJWVpaSkJHXq1EljxoxRXFycMjIyVFBQIEnavXu3bDab3n33XU2ZMkVxcXEenhoAAPgKn7wHS5KSk5OVnJxcY9+cOXPcHyckJKiiouJ2jwUAAOoBn7yCBQAA4EkEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGHNy2u+AAAIq0lEQVQEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGEEFgAAgGE+G1iFhYWKiYlRVFSUMjMzax2/ePGiHnnkEUVFRalnz54qKyu7/UMCAACf5JOB5XK5lJ6ernXr1qm4uFi5ubkqLi6usWbJkiUKCgrSkSNHNH36dM2aNctD0wIAAF/jk4FVVFSkqKgoRUZGKjAwUKmpqcrPz6+xJj8/XxMnTpQkjRo1Shs3bpRlWZ4YFwAA+BifDCyn06mwsDD3ts1mk9PpvOqagIAAtWzZUl999dVtnRMAAPimAE8PcCvUdSXKz8/vptdIUnZ2trKzsyVJn376qex2u6Epv9PG6KPhRlVWViokJMTTY9Q7dvtznh7hB+N71TP4XvWMW/G9Wt/udfbJwLLZbCovL3dvV1RUKDQ0tM41NptNly9f1qlTpxQcHFzrsdLS0pSWlnbLZ8btZbfb5XA4PD0GgOvgexV3Kp98iTAhIUElJSUqLS1VdXW18vLylJKSUmNNSkqK/vSnP0mSVqxYoUGDBtV5BQsAAOBm+eQVrICAAGVlZSkpKUkul0uTJk1SXFycMjIyZLfblZKSoscee0zjx49XVFSUgoODlZeX5+mxAQCAj/Cz+NE51EPZ2dm89AvcAfhexZ2KwAIAADDMJ+/BAgAA8CQCC15p5cqV8vPz06effirpux/v/clPfnLbnv92Px9QH7z44ouKi4tTly5dFB8frw8//PDffsycnBxNnTrVwHSAWQQWvFJubq769u3LDx8APmLnzp1as2aNPvroI+3fv18bNmyo8YbQP8Tly5cNTQeYR2DB65w9e1bbt2/XkiVL6gysnJwcDR8+XEOHDlVMTIz++7//231s6dKl6tGjh+Lj4zVlyhS5XC5JUvPmzfXss8+qa9eu6tWrl44fPy5J+uyzz9SrVy8lJCQoIyNDzZs3r/V8Fy5c0K9+9St17txZ3bp10+bNmyVJycnJ2r9/vySpW7dumjNnjiRp9uzZevPNN81+UYA73LFjx9SmTRs1atRIktSmTRuFhoYqIiJCs2bNUo8ePdSjRw8dOXJEkrR69Wr17NlT3bp10+DBg93fs88//7zS0tI0ZMgQTZgwocZzrF27Vr1799bJkydv7ycH1IHAgtdZtWqVhg4dqg4dOig4OFgfffRRrTVFRUVatmyZ9u3bp3fffVcOh0P/+Mc/9Pbbb2v79u3at2+f/P39tWzZMklSVVWVevXqpY8//lj9+vXT4sWLJUnTpk3TtGnTtHv37lpvRvu9RYsWSZI++eQT5ebmauLEibpw4YL69eunDz74QKdPn1ZAQIC2b98uSdq2bZsSExNvxZcGuGMNGTJE5eXl6tChg5566in9/e9/dx9r0aKFioqKNHXqVD399NOSpL59+2rXrl3au3evUlNT9fLLL7vX79mzR/n5+Vq+fLl738qVK5WZmam//vWvatOG992H5xFY8Dq5ublKTU2VJKWmpio3N7fWmgceeECtW7dWkyZN9LOf/Uzbtm3Txo0btWfPHiUkJCg+Pl4bN27U559/LkkKDAzUww8/LEnq3r27+1c27Ny5U6NHj5YkjR07ts55tm3bpvHjx0uSOnbsqPDwcB0+fFiJiYnaunWrtm3bpoceekhnz57VuXPnVFZWppiYGKNfE+BO17x5c+3Zs0fZ2dkKCQnRI488opycHEnSL37xC/d/d+7cKem738CRlJSkzp07a/78+Tp48KD7sVJSUtSkSRP39ubNmzVv3jytXbtWQUFBt++TAq7BJ99oFHeur776Sps2bdKBAwfk5+cnl8slPz8/PfXUUzXW/eu77vv5+cmyLE2cOFEvvfRSrcdt2LCh+xx/f/+bunfjau9kkpCQIIfDocjISD3wwAM6efKkFi9erO7du9/wYwP1ib+/vwYMGKABAwaoc+fO7t+m8X+/n7//+D/+4z80Y8YMpaSkaMuWLXr++efda5o1a1bjcSMjI/X555/r8OHDxn9fLPBDcQULXmXFihWaMGGCjh49qrKyMpWXl+vHP/6xKioqaqxbv369vv76a50/f16rVq1Snz59dP/992vFihU6ceKEJOnrr7/W0aNHr/l8vXr10nvvvSdJV72hvl+/fu6XGg8fPqwvvvhCMTExCgwMVFhYmN555x316tVLiYmJ+v3vf8/Lg0AdDh06pJKSEvf2vn37FB4eLkl6++233f/t3bu3JOnUqVNq166dJLlD7GrCw8P1l7/8RRMmTKhxpQvwJAILXiU3N1cjR46sse/nP/+55s6dW2Nf3759NX78eMXHx+vnP/+57Ha7YmNj9cILL2jIkCHq0qWLHnjgAR07duyaz/eHP/xBCxYsUI8ePXTs2DG1bNmy1pqnnnpKLpdLnTt3dr+s8f2NuomJiWrbtq2aNm2qxMREVVRUEFhAHc6ePauJEycqNjZWXbp0UXFxsfuq1MWLF9WzZ0+9+uqreuWVVyR9dzP76NGjlZiYeEP3VMXExGjZsmUaPXq0Pvvss1v5qQA3hHdyxx0nJydHDodDWVlZ//ZjnTt3Tk2aNJGfn5/y8vKUm5ur/Px8A1MCuBERERFyOBzcmA6fwz1YqNf27NmjqVOnyrIstWrVSn/84x89PRIAwAdwBQsAAMAw7sECAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAwjMACAAAw7P8BuYbGaJWie28AAAAASUVORK5CYII\u003d style\u003d\u0027width\u003dauto;height:auto\u0027\u003e\u003cdiv\u003e\n[0.07692307692307693, 0.0685404339250493] [0.1407051282051282, 1.0256410256410255] [0.13341707304676673, 0.7166343230169586]\n[0.13341707304676673, 0.7166343230169586]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578009676_444590433",
+      "id": "20181026-152009_1040793407",
+      "dateCreated": "Oct 26, 2018 3:20:09 PM",
+      "dateStarted": "Oct 26, 2018 5:20:03 PM",
+      "dateFinished": "Oct 26, 2018 5:20:05 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "# Construção de um dicionário dos pacientes e as respectivas doenças no período de teste.\nimport csv\nimport re\nwith open(\u0027test_data.csv\u0027) as csvfile:\n    readCSV \u003d csv.reader(csvfile, delimiter\u003d\u0027,\u0027)\n    \n    dic_admissions \u003d {}\n    admissions \u003d []\n\n    for row in readCSV:\n        paciente \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[1])\n        doenca \u003d re.sub(\u0027 \u0027, \u0027\u0027, row[2])\n        \n        if paciente not in admissions:\n            admissions.append(paciente)\n            vector \u003d []\n            vector.append(doenca)\n            dic_admissions.update({paciente: vector})\n        else:\n            vector \u003d dic_admissions.get(paciente)\n            vector.append(doenca)\n            dic_admissions.update({paciente: vector})",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:07:59 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540581980090_-103037544",
+      "id": "20181026-162620_876482875",
+      "dateCreated": "Oct 26, 2018 4:26:20 PM",
+      "dateStarted": "Oct 26, 2018 5:07:59 PM",
+      "dateFinished": "Oct 26, 2018 5:07:59 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "#d \u003d dictionary\r\nfn \u003d tp \u003d fp \u003d fn \u003d 0\r\nfor i in range(0, max):\r\n    paciente \u003d str(int(alpenglow_topks.iloc[i][\u0027user\u0027]))\r\n    doenca \u003d str(int(alpenglow_topks.iloc[i][\u0027item\u0027]))\r\n    rank \u003d int(alpenglow_topks.iloc[i][\u0027rank\u0027])\r\n    \r\n    #data \u003d row[0]\r\n    #paciente \u003d re.sub(\u0027 \u0027, \u0027\u0027, user)\r\n    #doenca \u003d re.sub(\u0027 \u0027, \u0027\u0027, item)\r\n    diseases1 \u003d dic_admissions.get(paciente)\r\n    #print(paciente, doenca, diseases1)\r\n                \r\n    if diseases1 is not None:\r\n        pos \u003d 0\r\n        if (doenca in diseases1):\r\n            tp \u003d tp + 1\r\n            pos \u003d pos + 1\r\n        else:\r\n            fp \u003d fp + 1\r\n            \r\n        fn \u003d fn + (len(diseases1) - pos)\r\n    \r\nacuracy \u003d round(tp / (tp + fp), 4)\r\nrecall \u003d round(tp / (tp + fn), 4)\r\n\r\nprint(\u0027Acurácia:\u0027, acuracy, \u0027%\u0027, \u0027Recall:\u0027, recall)\r\n\r\nprint(tp, fp, fn)\r\n                ",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:40 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Acurácia: 0.043 % Recall: 0.0033\n8 178 2395\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1540581967907_-1594339605",
+      "id": "20181026-162607_1980344436",
+      "dateCreated": "Oct 26, 2018 4:26:07 PM",
+      "dateStarted": "Oct 26, 2018 5:19:40 PM",
+      "dateFinished": "Oct 26, 2018 5:19:40 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "dic_recommend \u003d {}\nrecomend \u003d []\nuser_list \u003d []\nitem_list \u003d []\nrank_list \u003d []\n\nmax \u003d len(alpenglow_topks) - 1\nfor i in range(0, max):\n    user \u003d int(alpenglow_topks.iloc[i][\u0027user\u0027])\n    item \u003d int(alpenglow_topks.iloc[i][\u0027item\u0027])\n    rank \u003d int(alpenglow_topks.iloc[i][\u0027rank\u0027])\n    if rank \u003c\u003d 5:\n        user_list.append(user)\n        item_list.append(item)\n        rank_list.append(rank)\n        \nprint(len(user_list), len(item_list), len(rank_list) )\nmax \u003d len(user_list)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:52 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "260 260 260\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578402199_-1010622973",
+      "id": "20181026-152642_914660261",
+      "dateCreated": "Oct 26, 2018 3:26:42 PM",
+      "dateStarted": "Oct 26, 2018 5:19:52 PM",
+      "dateFinished": "Oct 26, 2018 5:19:53 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "d \u003d {\n    \u0027user\u0027 : pd.Series(user_list, index\u003d[*(range(0, max))] ),\n    \u0027item\u0027 : pd.Series(item_list, index\u003d[*(range(0, max))] ),\n    \u0027rank\u0027 : pd.Series(rank_list, index\u003d[*(range(0, max))] )\n}\n\ndataframe \u003d pd.DataFrame(d)",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:54 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578658984_-91859568",
+      "id": "20181026-153058_1597075590",
+      "dateCreated": "Oct 26, 2018 3:30:58 PM",
+      "dateStarted": "Oct 26, 2018 5:19:55 PM",
+      "dateFinished": "Oct 26, 2018 5:19:55 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "def ordena_dataframe(df):\n    max \u003d len(df[\u0027item\u0027])\n    users \u003d df[\u0027user\u0027].tolist()\n    itens \u003d df[\u0027item\u0027].tolist()\n    ranks \u003d df[\u0027rank\u0027].tolist()\n\n    d \u003d {\n        \u0027user\u0027 : pd.Series(users, index\u003d[*(range(0, max))] ),\n        \u0027item\u0027 : pd.Series(itens, index\u003d[*(range(0, max))] ),\n        \u0027rank\u0027 : pd.Series(ranks, index\u003d[*(range(0, max))] )\n    }\n    \n    dataframe \u003d pd.DataFrame(d)\n    \n    #print(dataframe)\n    \n    return dataframe",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:56 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578768568_64133947",
+      "id": "20181026-153248_1248889819",
+      "dateCreated": "Oct 26, 2018 3:32:48 PM",
+      "dateStarted": "Oct 26, 2018 5:19:56 PM",
+      "dateFinished": "Oct 26, 2018 5:19:56 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "alpenglow_topks \u003d dataframe",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:19:58 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1540578775864_1650468986",
+      "id": "20181026-153255_50340171",
+      "dateCreated": "Oct 26, 2018 3:32:55 PM",
+      "dateStarted": "Oct 26, 2018 5:19:58 PM",
+      "dateFinished": "Oct 26, 2018 5:19:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "dataframe",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:07:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "     item  rank   user\n0     311     1    406\n1     412     2    406\n2    2761     3    406\n3    2749     4    406\n4    3572     5    406\n5    5119     1   2338\n6    5845     2   2338\n7    2761     3   2338\n8     570     4   2338\n9    2762     5   2338\n10    412     1   2512\n11   3572     2   2512\n12   4439     3   2512\n13   4241     4   2512\n14   2749     5   2512\n15   5849     1   3952\n16   5789     2   3952\n17   4254     3   3952\n18   4439     4   3952\n19   2761     5   3952\n20   4240     1   4784\n21   4019     2   4784\n22   2762     3   4784\n23   5845     4   4784\n24   9971     5   4784\n25   5119     1   7078\n26   5845     2   7078\n27   4254     3   7078\n28    570     4   7078\n29    412     5   7078\n..    ...   ...    ...\n230  4019     1  71297\n231  3484     2  71297\n232  4139     3  71297\n233  5185     4  71297\n234  3485     5  71297\n235  4019     1  72847\n236   311     2  72847\n237  2762     3  72847\n238   496     4  72847\n239  3485     5  72847\n240   311     1  76435\n241  4240     2  76435\n242  3572     3  76435\n243  4254     4  76435\n244  5119     5  76435\n245  4019     1  77349\n246   412     2  77349\n247   311     3  77349\n248  2749     4  77349\n249  2762     5  77349\n250  2724     1  78641\n251  4019     2  78641\n252  4241     3  78641\n253  2749     4  78641\n254  4139     5  78641\n255  2724     1  84465\n256  4019     2  84465\n257   412     3  84465\n258  4241     4  84465\n259   311     5  84465\n\n[260 rows x 3 columns]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1540579155348_1272364797",
+      "id": "20181026-153915_417410308",
+      "dateCreated": "Oct 26, 2018 3:39:15 PM",
+      "dateStarted": "Oct 26, 2018 5:07:08 PM",
+      "dateFinished": "Oct 26, 2018 5:07:08 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "",
+      "user": "anonymous",
+      "dateUpdated": "Oct 26, 2018 5:01:26 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1540582623174_1211554737",
+      "id": "20181026-163703_1287929390",
+      "dateCreated": "Oct 26, 2018 4:37:03 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Avaliação",
+  "id": "2DWSR8H8M",
+  "angularObjects": {
+    "2DFFMJW2D:shared_process": [],
+    "2DE4C8UXA:shared_process": [],
+    "2DFNF7F86:shared_process": [],
+    "2DDMFQ4NT:shared_process": [],
+    "2DF4JHTJS:shared_process": [],
+    "2DGTDKVBY:shared_process": [],
+    "2DDX1FHE4:shared_process": [],
+    "2DGBVAR63:shared_process": [],
+    "2DE1HTE4B:shared_process": [],
+    "2DFUMJA2M:shared_process": [],
+    "2DF3EN9Y8:shared_process": [],
+    "2DFG8QFKG:shared_process": [],
+    "2DE19T4UN:shared_process": [],
+    "2DDZ2CZF6:shared_process": [],
+    "2DGYH4B9E:shared_process": [],
+    "2DEG6W7VR:shared_process": [],
+    "2DFPD3S3G:shared_process": [],
+    "2DHACHYJ3:shared_process": [],
+    "2DDRJAE6Z:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}
